@@ -1,6 +1,5 @@
 import { getCachedNetworkInfo, getComprehensiveNetworkInfo } from './ipService';
 import { ThreatAnalysisService } from './threatAnalysisService';
-import { PhoneValidationService } from './phoneValidationService';
 
 export interface UserProfile {
   id: string;
@@ -30,15 +29,6 @@ export interface UserProfile {
   sessionStart: string;
   riskScore: number;
   riskLevel: 'Low' | 'Medium' | 'High' | 'Critical';
-  phoneValidation?: {
-    phone?: string;
-    isValid?: boolean;
-    isMobile?: boolean;
-    carrier?: string;
-    country?: string;
-    riskScore?: number;
-    riskLevel?: 'low' | 'medium' | 'high' | 'critical';
-  };
 }
 
 export interface SecurityEvent {
@@ -136,32 +126,6 @@ class UserDataService {
         console.warn('Threat analysis failed, using default risk score:', error);
       }
 
-      // Perform phone validation if phone number is available
-      let phoneValidation = undefined;
-      try {
-        // First check if we have a verified phone number from OAuth or previous verification
-        let phoneNumber = localStorage.getItem('verifiedPhoneNumber');
-        
-        // If no verified phone, check onboarding data
-        if (!phoneNumber && onboardingRaw) {
-          const onboardingData = JSON.parse(onboardingRaw);
-          phoneNumber = onboardingData.phone;
-        }
-        
-        if (phoneNumber) {
-          // Check if we already have validation data stored
-          const storedValidation = localStorage.getItem('phoneVerificationData');
-          if (storedValidation) {
-            phoneValidation = JSON.parse(storedValidation);
-            console.log('📱 Using stored phone validation data:', phoneValidation);
-          } else {
-            // Perform new validation
-            phoneValidation = await PhoneValidationService.validatePhone(phoneNumber);
-          }
-        }
-      } catch (error) {
-        console.warn('Phone validation failed:', error);
-      }
 
       // Create user profile with comprehensive real data
       this.userProfile = {
@@ -191,16 +155,7 @@ class UserDataService {
         deviceFingerprint: `FP_${Math.random().toString(36).substring(7)}`,
         sessionStart: new Date().toISOString(),
         riskScore,
-        riskLevel: riskScore > 70 ? 'Critical' : riskScore > 40 ? 'High' : 'Medium',
-        phoneValidation: phoneValidation ? {
-          phone: phoneValidation.phone,
-          isValid: phoneValidation.isValid,
-          isMobile: phoneValidation.isMobile,
-          carrier: phoneValidation.carrier,
-          country: phoneValidation.country,
-          riskScore: phoneValidation.riskScore,
-          riskLevel: phoneValidation.riskLevel
-        } : undefined
+        riskLevel: riskScore > 70 ? 'Critical' : riskScore > 40 ? 'High' : 'Medium'
       };
 
       // Generate security events with real data
