@@ -123,7 +123,7 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
       case 'missing':
         return <AlertCircle className="h-4 w-4 text-yellow-500" />;
       default:
-        return <AlertCircle className="h-4 w-4 text-gray-500" />;
+        return <AlertCircle className="h-4 w-4 text-white/50" />;
     }
   };
 
@@ -136,7 +136,7 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
       case 'missing':
         return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
       default:
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+        return 'bg-white/10 text-white/90 hover:bg-white/15 border-white/20';
     }
   };
 
@@ -244,21 +244,21 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
       </div>
 
       {/* Overall Progress */}
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="card-hover glass-card-lg">
         <CardHeader>
           <CardTitle className="text-white">Data Quality Overview</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardDescription className="text-white/60">
             Real data percentage: {report.realDataPercentage}%
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-300">Real Data</span>
+              <span className="text-sm text-white/80">Real Data</span>
               <span className="text-sm text-green-400">{report.realDataPoints} points</span>
             </div>
             <Progress value={report.realDataPercentage} className="h-2" />
-            <div className="flex items-center justify-between text-xs text-slate-400">
+            <div className="flex items-center justify-between text-xs text-white/60">
               <span>0%</span>
               <span>50%</span>
               <span>100%</span>
@@ -268,26 +268,26 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
       </Card>
 
       {/* Data Sources Breakdown */}
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="card-hover glass-card-lg">
         <CardHeader>
           <CardTitle className="text-white">Data Sources Analysis</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardDescription className="text-white/60">
             Detailed breakdown of each data source and its verification status
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {Object.entries(report.dataSources).map(([key, data]) => (
-              <div key={key} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+              <div key={key} className="flex items-center justify-between p-4 glass rounded-xl border border-white/10">
                 <div className="flex items-center space-x-3">
                   {getStatusIcon(data.status)}
                   <div>
                     <div className="font-medium text-white capitalize">
                       {key.replace(/([A-Z])/g, ' $1').trim()}
                     </div>
-                    <div className="text-sm text-slate-400">{data.description}</div>
+                    <div className="text-sm text-white/60">{data.description}</div>
                     {data.apiUsed && (
-                      <div className="text-xs text-slate-500">API: {data.apiUsed}</div>
+                      <div className="text-xs text-white/50">API: {data.apiUsed}</div>
                     )}
                   </div>
                 </div>
@@ -295,7 +295,7 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
                   <Badge className={getStatusColor(data.status)}>
                     {data.status.toUpperCase()}
                   </Badge>
-                  <div className="text-sm text-slate-400">
+                  <div className="text-sm text-white/60">
                     {data.confidence}% confidence
                   </div>
                 </div>
@@ -306,19 +306,19 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
       </Card>
 
       {/* Recommendations */}
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="card-hover glass-card-lg">
         <CardHeader>
           <CardTitle className="text-white">Recommendations</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardDescription className="text-white/60">
             Actions needed to improve data quality
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {report.recommendations.map((recommendation, index) => (
-              <div key={index} className="flex items-start space-x-3 p-3 bg-slate-700/30 rounded-lg">
+              <div key={index} className="flex items-start space-x-3 p-4 glass rounded-xl border border-white/10">
                 <AlertCircle className="h-5 w-5 text-yellow-500 mt-0.5" />
-                <span className="text-slate-300">{recommendation}</span>
+                <span className="text-white/80">{recommendation}</span>
               </div>
             ))}
           </div>
@@ -326,10 +326,10 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
       </Card>
 
       {/* Additional APIs */}
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="card-hover glass-card-lg">
         <CardHeader>
           <CardTitle className="text-white">Recommended Additional APIs</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardDescription className="text-white/60">
             APIs that could enhance threat analysis and user security behavior
           </CardDescription>
         </CardHeader>
@@ -338,7 +338,7 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
             {report.additionalAPIs.map((api, index) => (
               <div key={index} className="flex items-center space-x-3 p-3 bg-slate-700/30 rounded-lg">
                 <ExternalLink className="h-4 w-4 text-cyan-400" />
-                <span className="text-slate-300 text-sm">{api}</span>
+                <span className="text-white/80 text-sm">{api}</span>
               </div>
             ))}
           </div>
@@ -346,12 +346,12 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
       </Card>
 
       {/* Report Metadata */}
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="card-hover glass-card-lg">
         <CardHeader>
           <CardTitle className="text-white">Report Information</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-slate-400">
+          <div className="text-sm text-white/60">
             <p>Generated: {new Date(report.timestamp).toLocaleString()}</p>
             <p>Report ID: {report.timestamp.split('T')[0]}-{Math.random().toString(36).substring(7)}</p>
           </div>
@@ -362,7 +362,7 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
               <h3 className="text-white font-medium">Report Downloads</h3>
               <div className="flex items-center space-x-3 flex-wrap gap-2">
                 {pdfUrl && (
-                  <Button variant="outline" className="bg-slate-700 hover:bg-slate-600 text-white border-slate-600" onClick={() => window.open(pdfUrl, '_blank')}>
+                  <Button variant="outline" onClick={() => window.open(pdfUrl, '_blank')}>
                     <FileText className="mr-2 h-4 w-4" />
                     Preview Report
                   </Button>

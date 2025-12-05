@@ -31,6 +31,22 @@ export class DataValidationReportService {
     let fakeDataPoints = 0;
     let missingDataPoints = 0;
     
+    // Get real Google data if available
+    const googleDataRaw = localStorage.getItem('google_real_data');
+    const gmailMetadataRaw = localStorage.getItem('gmail_metadata');
+    const gmailSettingsRaw = localStorage.getItem('gmail_settings');
+    let googleData = null;
+    let gmailMetadata = null;
+    let gmailSettings = null;
+    
+    try {
+      if (googleDataRaw) googleData = JSON.parse(googleDataRaw);
+      if (gmailMetadataRaw) gmailMetadata = JSON.parse(gmailMetadataRaw);
+      if (gmailSettingsRaw) gmailSettings = JSON.parse(gmailSettingsRaw);
+    } catch (error) {
+      console.warn('Failed to parse Google data:', error);
+    }
+    
     // Get real IP data - Force real data collection
     const ipData = await ipService.getIPData(true);
     const userProfile = {
@@ -44,20 +60,55 @@ export class DataValidationReportService {
       asn: ipData?.asn || 'Unknown'
     };
 
-    // Email Analysis
+    // Google Profile Data (Real if available)
+    if (googleData?.profile?.email) {
+      dataSources['googleProfile'] = {
+        status: 'real',
+        description: 'Google profile information',
+        apiUsed: 'Google People API / OAuth2 Userinfo',
+        confidence: 95,
+        data: {
+          name: googleData.profile.name,
+          email: googleData.profile.email,
+          picture: googleData.profile.picture ? 'Available' : 'Not available',
+          locale: googleData.profile.locale,
+          emailVerified: googleData.profile.emailVerified,
+          accountCreationTime: googleData.profile.accountCreationTime || 'Not available',
+          recoveryEmailStatus: googleData.profile.recoveryEmailStatus !== null ? 
+            (googleData.profile.recoveryEmailStatus ? 'Set' : 'Not Set') : 'Unknown'
+        }
+      };
+      realDataPoints++;
+    } else {
+      dataSources['googleProfile'] = {
+        status: 'missing',
+        description: 'Google profile information',
+        apiUsed: 'Not authenticated',
+        confidence: 0
+      };
+      missingDataPoints++;
+    }
+
+    // Email Analysis (use real Google email if available)
+    const userEmail = googleData?.profile?.email || 'user@example.com';
     dataSources['email'] = {
-      status: 'real',
+      status: googleData?.profile?.email ? 'real' : 'fake',
       description: 'Email address verification',
-      apiUsed: 'Email verification API',
-      confidence: 90,
+      apiUsed: googleData?.profile?.email ? 'Google OAuth' : 'Email verification API',
+      confidence: googleData?.profile?.email ? 95 : 90,
       data: {
-        email: 'user@example.com',
+        email: userEmail,
         valid: true,
         disposable: false,
-        deliverable: true
+        deliverable: true,
+        verified: googleData?.profile?.emailVerified || false
       }
     };
-    realDataPoints++;
+    if (googleData?.profile?.email) {
+      realDataPoints++;
+    } else {
+      fakeDataPoints++;
+    }
     
     // IP Geolocation
     dataSources['ipGeolocation'] = {
@@ -157,6 +208,59 @@ export class DataValidationReportService {
       missingDataPoints++;
     }
     
+    // Gmail Metadata (Real if available)
+    if (gmailMetadata) {
+      dataSources['gmailMetadata'] = {
+        status: 'real',
+        description: 'Gmail mailbox metadata',
+        apiUsed: 'Gmail API (metadata only)',
+        confidence: 95,
+        data: {
+          inboxCount: gmailMetadata.totalInboxCount,
+          spamCount: gmailMetadata.totalSpamCount,
+          unreadCount: gmailMetadata.totalUnreadCount,
+          uniqueSenders: gmailMetadata.uniqueSenders?.length || 0,
+          suspiciousDomains: gmailMetadata.suspiciousDomains?.length || 0,
+          labelsCount: gmailMetadata.labels?.length || 0
+        }
+      };
+      realDataPoints++;
+    } else {
+      dataSources['gmailMetadata'] = {
+        status: 'missing',
+        description: 'Gmail mailbox metadata',
+        apiUsed: 'Gmail API not available',
+        confidence: 0
+      };
+      missingDataPoints++;
+    }
+
+    // Gmail Settings (Real if available)
+    if (gmailSettings) {
+      dataSources['gmailSettings'] = {
+        status: 'real',
+        description: 'Gmail account settings',
+        apiUsed: 'Gmail Settings API',
+        confidence: 95,
+        data: {
+          forwardingEnabled: gmailSettings.forwardingEnabled,
+          popEnabled: gmailSettings.popEnabled,
+          imapEnabled: gmailSettings.imapEnabled,
+          autoReplyEnabled: gmailSettings.autoReplyEnabled,
+          delegatedAccountsCount: gmailSettings.delegatedAccounts?.length || 0
+        }
+      };
+      realDataPoints++;
+    } else {
+      dataSources['gmailSettings'] = {
+        status: 'missing',
+        description: 'Gmail account settings',
+        apiUsed: 'Gmail Settings API not available',
+        confidence: 0
+      };
+      missingDataPoints++;
+    }
+
     // Add risk score data source
     dataSources['riskScore'] = {
       status: 'real',
@@ -175,12 +279,33 @@ export class DataValidationReportService {
     const totalDataPoints = realDataPoints + fakeDataPoints + missingDataPoints;
     const realDataPercentage = Math.round((realDataPoints / totalDataPoints) * 100);
 
-    // Generate recommendations
-    const recommendations = [
-      "Implement phone number verification to improve user validation",
-      "Consider using a more robust email verification service",
-      "Add two-factor authentication for higher security"
-    ];
+    // Generate recommendations based on real data availability
+    const recommendations = [];
+    
+    if (!googleData?.profile?.email) {
+      recommendations.push("Authenticate with Google OAuth to access real profile data");
+    }
+    if (!gmailMetadata) {
+      recommendations.push("Enable Gmail API access to fetch mailbox metadata");
+    }
+    if (!gmailSettings) {
+      recommendations.push("Enable Gmail Settings API access to analyze account security");
+    }
+    if (gmailMetadata?.suspiciousDomains && gmailMetadata.suspiciousDomains.length > 0) {
+      recommendations.push(`Review ${gmailMetadata.suspiciousDomains.length} suspicious email domains detected in mailbox`);
+    }
+    if (gmailSettings?.forwardingEnabled) {
+      recommendations.push("Email forwarding is enabled - review for security implications");
+    }
+    if (gmailSettings?.delegatedAccounts && gmailSettings.delegatedAccounts.length > 0) {
+      recommendations.push(`Review ${gmailSettings.delegatedAccounts.length} delegated account(s) for security`);
+    }
+    
+    // Default recommendations if no specific issues
+    if (recommendations.length === 0) {
+      recommendations.push("Implement phone number verification to improve user validation");
+      recommendations.push("Add two-factor authentication for higher security");
+    }
 
     // Suggest additional APIs
     const additionalAPIs = [
@@ -188,6 +313,14 @@ export class DataValidationReportService {
       "HaveIBeenPwned for password breach checking",
       "MaxMind for more accurate geolocation"
     ];
+    
+    // Add Google-specific APIs if not already using them
+    if (!googleData) {
+      additionalAPIs.push("Google People API for enhanced profile data");
+    }
+    if (!gmailMetadata) {
+      additionalAPIs.push("Gmail API for mailbox analysis");
+    }
 
     // Create JSON summary
     const jsonSummary = JSON.stringify({

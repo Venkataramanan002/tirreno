@@ -39,11 +39,25 @@ const ThreatDetection = () => {
         setIsLoading(true);
         console.log('ThreatDetection: Starting unified threat analysis...');
         
+        // Get real Google data if available
+        const gmailMetadataRaw = localStorage.getItem('gmail_metadata');
+        const gmailSettingsRaw = localStorage.getItem('gmail_settings');
+        let gmailMetadata = null;
+        let gmailSettings = null;
+        
+        try {
+          if (gmailMetadataRaw) gmailMetadata = JSON.parse(gmailMetadataRaw);
+          if (gmailSettingsRaw) gmailSettings = JSON.parse(gmailSettingsRaw);
+        } catch (error) {
+          console.warn('Failed to parse Gmail data:', error);
+        }
+        
         // Get unified enrichment data
         const enrichment = await dataAggregationService.getUnifiedEnrichmentData();
         setEnrichmentData(enrichment);
         
         console.log('ThreatDetection: Using unified enrichment data:', enrichment);
+        console.log('ThreatDetection: Using real Gmail data:', { gmailMetadata, gmailSettings });
         
         // Calculate real metrics based on unified analysis
         const riskScore = enrichment.unifiedRiskScore;
@@ -82,10 +96,26 @@ const ThreatDetection = () => {
         const realThreatTypes = [
           { 
             type: `Email Analysis: ${enrichment.userProfile.email}`, 
-            count: Math.floor(enrichment.emailAnalysis.riskScore / 4) + 8, 
-            severity: enrichment.emailAnalysis.riskScore > 70 ? 'critical' : enrichment.emailAnalysis.riskScore > 40 ? 'high' : 'medium',
-            color: enrichment.emailAnalysis.riskScore > 70 ? '#ef4444' : enrichment.emailAnalysis.riskScore > 40 ? '#f59e0b' : '#10b981'
+            count: Math.floor(enrichment.emailAnalysis.riskScore / 4) + 8 + (gmailMetadata?.suspiciousDomains?.length || 0), 
+            severity: enrichment.emailAnalysis.riskScore > 70 || (gmailMetadata?.suspiciousDomains?.length || 0) > 5 ? 'critical' : 
+                     enrichment.emailAnalysis.riskScore > 40 || (gmailMetadata?.suspiciousDomains?.length || 0) > 0 ? 'high' : 'medium',
+            color: enrichment.emailAnalysis.riskScore > 70 || (gmailMetadata?.suspiciousDomains?.length || 0) > 5 ? '#ef4444' : 
+                   enrichment.emailAnalysis.riskScore > 40 || (gmailMetadata?.suspiciousDomains?.length || 0) > 0 ? '#f59e0b' : '#10b981'
           },
+          ...(gmailMetadata ? [{
+            type: `Gmail Security: ${gmailMetadata.suspiciousDomains?.length || 0} Suspicious Domains`,
+            count: (gmailMetadata.suspiciousDomains?.length || 0) * 2 + (gmailMetadata.totalSpamCount || 0) / 10,
+            severity: (gmailMetadata.suspiciousDomains?.length || 0) > 5 ? 'critical' : 
+                     (gmailMetadata.suspiciousDomains?.length || 0) > 0 ? 'high' : 'medium',
+            color: (gmailMetadata.suspiciousDomains?.length || 0) > 5 ? '#ef4444' : 
+                   (gmailMetadata.suspiciousDomains?.length || 0) > 0 ? '#f59e0b' : '#10b981'
+          }] : []),
+          ...(gmailSettings?.forwardingEnabled || (gmailSettings?.delegatedAccounts?.length || 0) > 0 ? [{
+            type: `Gmail Account Security: ${gmailSettings?.forwardingEnabled ? 'Forwarding' : ''}${gmailSettings?.forwardingEnabled && (gmailSettings?.delegatedAccounts?.length || 0) > 0 ? ' + ' : ''}${(gmailSettings?.delegatedAccounts?.length || 0) > 0 ? `${gmailSettings.delegatedAccounts.length} Delegated` : ''}`,
+            count: (gmailSettings?.forwardingEnabled ? 5 : 0) + ((gmailSettings?.delegatedAccounts?.length || 0) * 3),
+            severity: (gmailSettings?.delegatedAccounts?.length || 0) > 2 ? 'high' : 'medium',
+            color: (gmailSettings?.delegatedAccounts?.length || 0) > 2 ? '#f59e0b' : '#10b981'
+          }] : []),
           { 
             type: `IP Intelligence: ${enrichment.userProfile.ipAddress}`, 
             count: Math.floor(enrichment.threatIntelligence.riskScore / 3) + 12, 
@@ -274,70 +304,70 @@ const ThreatDetection = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-[400px] animate-fade-in">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4 glow-cyan"></div>
-          <p className="text-gray-400">Loading unified threat intelligence...</p>
+          <div className="animate-spin rounded-full h-14 w-14 border-2 border-white/20 border-t-cyan-400 mx-auto mb-6 glow-cyan"></div>
+          <p className="tahoe-text">Loading unified threat intelligence...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-fade-in">
       {/* Unified Threat Intelligence Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gray-900/50 border-gray-700 card-hover">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-200">Total Threats Detected</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-400" />
+        <Card className="tahoe-hover-scale">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="tahoe-text-lg">Total Threats Detected</CardTitle>
+            <AlertTriangle className="h-5 w-5 text-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{summaryMetrics?.totalThreats || 0}</div>
-            <p className="text-xs text-gray-400">
+            <div className="tahoe-title mb-2">{summaryMetrics?.totalThreats || 0}</div>
+            <p className="tahoe-text opacity-60">
               Multi-source threat intelligence
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-900/50 border-gray-700 card-hover">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-200">Threats Blocked</CardTitle>
-            <Shield className="h-4 w-4 text-green-400" />
+        <Card className="tahoe-hover-scale">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="tahoe-text-lg">Threats Blocked</CardTitle>
+            <Shield className="h-5 w-5 text-green-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{summaryMetrics?.blockedThreats || 0}</div>
-            <p className="text-xs text-gray-400">
+            <div className="tahoe-title mb-2">{summaryMetrics?.blockedThreats || 0}</div>
+            <p className="tahoe-text opacity-60">
               {summaryMetrics?.detectionRate || '0%'} success rate
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-900/50 border-gray-700 card-hover">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-200">False Positives</CardTitle>
-            <AlertCircle className="h-4 w-4 text-yellow-400" />
+        <Card className="tahoe-hover-scale">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="tahoe-text-lg">False Positives</CardTitle>
+            <AlertCircle className="h-5 w-5 text-yellow-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{summaryMetrics?.falsePositives || 0}</div>
-            <p className="text-xs text-gray-400">
+            <div className="tahoe-title mb-2">{summaryMetrics?.falsePositives || 0}</div>
+            <p className="tahoe-text opacity-60">
               {summaryMetrics?.accuracy || '0%'} accuracy rate
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-900/50 border-gray-700 card-hover glow-cyan">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-200">Unified Risk Score</CardTitle>
-            <Cpu className="h-4 w-4 text-cyan-400" />
+        <Card className="tahoe-hover-scale">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="tahoe-text-lg">Unified Risk Score</CardTitle>
+            <Cpu className="h-5 w-5 text-blue-400 tahoe-icon" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-cyan-400">{summaryMetrics?.unifiedRiskScore || 0}/100</div>
-            <p className="text-xs text-gray-400">
+            <div className="tahoe-title text-blue-400 mb-2">{summaryMetrics?.unifiedRiskScore || 0}/100</div>
+            <p className="tahoe-text opacity-60 mb-3">
               {summaryMetrics?.unifiedRiskLevel?.toUpperCase() || 'UNKNOWN'} - {summaryMetrics?.unifiedClassification?.toUpperCase() || 'UNKNOWN'}
             </p>
-            <div className="mt-2">
-              <span className={`text-xs px-2 py-1 rounded ${
+            <div>
+              <span className={`tahoe-text px-3 py-1.5 rounded-full ${
                 summaryMetrics?.unifiedClassification === 'malicious' ? 'malicious' :
                 summaryMetrics?.unifiedClassification === 'suspicious' ? 'suspicious' :
                 summaryMetrics?.unifiedClassification === 'benign' ? 'benign' : 'unknown'
@@ -350,107 +380,109 @@ const ThreatDetection = () => {
       </div>
 
       {/* Unified Threat Intelligence Chart */}
-      <Card className="bg-gray-900/50 border-gray-700 card-hover">
+      <Card className="tahoe-glass-lg tahoe-hover-scale">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <BarChart className="w-5 h-5 text-cyan-400" />
+          <CardTitle className="text-white flex items-center gap-3">
+            <BarChart className="w-6 h-6 text-blue-400 tahoe-icon" />
             Unified Threat Intelligence Analysis
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription className="text-white/60">
             Multi-source threat analysis with real-time data correlation
           </CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={threatTypes}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="type" stroke="#9ca3af" angle={-45} textAnchor="end" height={100} />
-              <YAxis stroke="#9ca3af" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <XAxis dataKey="type" stroke="rgba(255,255,255,0.5)" angle={-45} textAnchor="end" height={100} />
+              <YAxis stroke="rgba(255,255,255,0.5)" />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: '#000000', 
-                  border: '1px solid #00ffff',
-                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(0, 200, 255, 0.3)',
+                  borderRadius: '18px',
                   color: '#fff'
                 }} 
               />
-              <Bar dataKey="count" fill="#00ffff" />
+              <Bar dataKey="count" fill="#00C8FF" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
       {/* Behavioral Analysis Chart */}
-      <Card className="bg-gray-900/50 border-gray-700 card-hover">
+      <Card className="tahoe-glass-lg tahoe-hover-scale">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Eye className="w-5 h-5 text-cyan-400" />
+          <CardTitle className="text-white flex items-center gap-3">
+            <Eye className="w-6 h-6 text-blue-400 tahoe-icon" />
             Behavioral Pattern Analysis
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription className="text-white/60">
             Real-time user behavior tracking and anomaly detection
           </CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={hourlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="time" stroke="#9ca3af" />
-              <YAxis stroke="#9ca3af" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <XAxis dataKey="time" stroke="rgba(255,255,255,0.5)" />
+              <YAxis stroke="rgba(255,255,255,0.5)" />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: '#000000', 
-                  border: '1px solid #00ffff',
-                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(0, 200, 255, 0.3)',
+                  borderRadius: '18px',
                   color: '#fff'
                 }} 
               />
-              <Bar dataKey="threats" fill="#ef4444" name="Threats Detected" />
-              <Bar dataKey="blocked" fill="#00ffff" name="Threats Blocked" />
+              <Bar dataKey="threats" fill="#ef4444" name="Threats Detected" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="blocked" fill="#00C8FF" name="Threats Blocked" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
       {/* Unified Detection Rules */}
-      <Card className="bg-gray-900/50 border-gray-700 card-hover">
+      <Card className="tahoe-glass-lg tahoe-hover-scale">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Zap className="w-5 h-5 text-cyan-400" />
+          <CardTitle className="text-white flex items-center gap-3">
+            <Zap className="w-6 h-6 text-blue-400 tahoe-icon" />
             Unified Detection Rules & Status
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription className="text-white/60">
             Multi-source threat intelligence correlation and behavioral analysis
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {detectionRules.map((rule) => (
-              <div key={rule.id} className="p-4 bg-gray-800/50 rounded-lg border border-gray-600 glow-cyan">
-                <div className="flex items-start justify-between mb-3">
+              <div key={rule.id} className="p-5 tahoe-glass rounded-2xl tahoe-transition tahoe-hover-scale">
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <h3 className="text-white font-medium">{rule.name}</h3>
-                      <Badge className={`${
-                        rule.status === 'active' ? 'bg-green-600' : 'bg-red-600'
-                      } text-white`}>
+                    <div className="flex items-center space-x-3 mb-3">
+                      <h3 className="tahoe-text-lg font-semibold">{rule.name}</h3>
+                      <Badge className={`rounded-full px-3 py-1 ${
+                        rule.status === 'active' ? 'bg-green-500/20 text-green-400 border-green-500/40' : 'bg-red-500/20 text-red-400 border-red-500/40'
+                      }`}>
                         {rule.status.toUpperCase()}
                       </Badge>
                     </div>
-                    <p className="text-gray-300 text-sm mb-3">{rule.description}</p>
-                    <div className="flex items-center space-x-4 text-sm">
+                    <p className="tahoe-text opacity-70 mb-4">{rule.description}</p>
+                    <div className="flex items-center space-x-6 tahoe-text">
                       <div className="flex items-center space-x-2">
-                        <span className="text-gray-400">Accuracy:</span>
-                        <span className="text-white font-medium">{rule.accuracy}%</span>
-                        <Progress value={rule.accuracy} className="w-20 h-2" />
+                        <span className="text-white/50">Accuracy:</span>
+                        <span className="text-white font-semibold">{rule.accuracy}%</span>
+                        <Progress value={rule.accuracy} className="w-24 h-2 bg-white/10" />
                       </div>
                       <div className="flex items-center space-x-2">
-                        <span className="text-gray-400">Threats:</span>
-                        <span className="text-white font-medium">{rule.threatCount}</span>
+                        <span className="text-white/50">Threats:</span>
+                        <span className="text-white font-semibold">{rule.threatCount}</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <span className="text-gray-400">Last Triggered:</span>
-                        <span className="text-gray-300">{rule.lastTriggered}</span>
+                        <span className="text-white/50">Last Triggered:</span>
+                        <span className="text-white/80">{rule.lastTriggered}</span>
                       </div>
                     </div>
                   </div>

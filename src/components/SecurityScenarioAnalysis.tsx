@@ -68,7 +68,7 @@ const SecurityScenarioAnalysis = () => {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading user session data...</p>
+          <p className="text-white/60">Loading user session data...</p>
         </div>
       </div>
     );
@@ -77,7 +77,7 @@ const SecurityScenarioAnalysis = () => {
   return (
     <div className="space-y-6">
       {/* Scenario Overview */}
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="card-hover glass-card-lg">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <Shield className="w-5 h-5 text-cyan-400" />
@@ -89,7 +89,7 @@ const SecurityScenarioAnalysis = () => {
               </div>
             )}
           </CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardDescription className="text-white/60">
             Real-time analysis of user session: {userSession.email} (Risk Score: {userSession.riskScore}/100)
             {isAnalyzing && analysisStep && (
               <div className="mt-2 text-xs text-cyan-400">{analysisStep}</div>
@@ -98,26 +98,26 @@ const SecurityScenarioAnalysis = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="p-4 bg-slate-700/50 rounded-lg">
+            <div className="p-5 glass rounded-xl border border-white/10">
               <div className="flex items-center space-x-2 mb-2">
                 <User className="w-4 h-4 text-cyan-400" />
-                <span className="text-sm text-slate-400">User Session</span>
+                <span className="text-sm text-white/60">User Session</span>
               </div>
               <div className="text-white font-medium">{userSession.email}</div>
-              <div className="text-sm text-slate-300">{userSession.deviceType}</div>
+              <div className="text-sm text-white/80">{userSession.deviceType}</div>
             </div>
-            <div className="p-4 bg-slate-700/50 rounded-lg">
+            <div className="p-5 glass rounded-xl border border-white/10">
               <div className="flex items-center space-x-2 mb-2">
                 <MapPin className="w-4 h-4 text-cyan-400" />
-                <span className="text-sm text-slate-400">Primary Location</span>
+                <span className="text-sm text-white/60">Primary Location</span>
               </div>
               <div className="text-white font-medium">{userSession.location}</div>
-              <div className="text-sm text-slate-300">{userSession.ipAddress}</div>
+              <div className="text-sm text-white/80">{userSession.ipAddress}</div>
             </div>
-            <div className="p-4 bg-slate-700/50 rounded-lg">
+            <div className="p-5 glass rounded-xl border border-white/10">
               <div className="flex items-center space-x-2 mb-2">
                 <AlertTriangle className="w-4 h-4 text-red-400" />
-                <span className="text-sm text-slate-400">Risk Assessment</span>
+                <span className="text-sm text-white/60">Risk Assessment</span>
               </div>
               <div className="text-red-400 font-bold text-lg">{userSession.riskScore}/100</div>
               <div className="text-sm text-red-300">{userSession.riskLevel}</div>
@@ -127,13 +127,13 @@ const SecurityScenarioAnalysis = () => {
       </Card>
 
       {/* Event Timeline */}
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="card-hover glass-card-lg">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <Clock className="w-5 h-5 text-cyan-400" />
             Security Event Timeline
           </CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardDescription className="text-white/60">
             Chronological sequence of security events and detections
           </CardDescription>
         </CardHeader>
@@ -143,7 +143,7 @@ const SecurityScenarioAnalysis = () => {
               <div key={event.id} className="relative pl-8 pb-4">
                 {/* Timeline line */}
                 {index < securityEvents.length - 1 && (
-                  <div className="absolute left-3 top-8 bottom-0 w-0.5 bg-slate-600"></div>
+                  <div className="absolute left-3 top-8 bottom-0 w-0.5 bg-white/20"></div>
                 )}
                 
                 {/* Timeline dot */}
@@ -152,11 +152,11 @@ const SecurityScenarioAnalysis = () => {
                   event.severity === 'medium' ? 'bg-orange-400' : 'bg-green-400'
                 }`}></div>
                 
-                <div className="bg-slate-700/50 rounded-lg p-4 ml-4">
+                <div className="glass rounded-xl p-5 ml-4 border border-white/10">
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <div className="text-white font-medium">{event.eventType}</div>
-                      <div className="text-sm text-slate-400">{new Date(event.timestamp).toLocaleString()}</div>
+                      <div className="text-sm text-white/60">{new Date(event.timestamp).toLocaleString()}</div>
                     </div>
                     <div className="flex items-center space-x-2">
                       {getSeverityBadge(event.severity)}
@@ -170,26 +170,26 @@ const SecurityScenarioAnalysis = () => {
                     </div>
                   </div>
                   
-                  <p className="text-slate-300 mb-3">{event.details}</p>
+                  <p className="text-white/80 mb-3">{event.details}</p>
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <span className="text-slate-400">IP:</span>
-                      <span className="text-slate-300 ml-2 font-mono">{event.ipAddress}</span>
+                      <span className="text-white/60">IP:</span>
+                      <span className="text-white/80 ml-2 font-mono">{event.ipAddress}</span>
                     </div>
                     <div>
-                      <span className="text-slate-400">Location:</span>
-                      <span className="text-slate-300 ml-2">{event.location}</span>
+                      <span className="text-white/60">Location:</span>
+                      <span className="text-white/80 ml-2">{event.location}</span>
                     </div>
                     {event.userId && (
                       <div>
-                        <span className="text-slate-400">User ID:</span>
-                        <span className="text-slate-300 ml-2 font-mono">{event.userId}</span>
+                        <span className="text-white/60">User ID:</span>
+                        <span className="text-white/80 ml-2 font-mono">{event.userId}</span>
                       </div>
                     )}
                     {event.riskScore && (
                       <div>
-                        <span className="text-slate-400">Risk Score:</span>
+                        <span className="text-white/60">Risk Score:</span>
                         <span className={`ml-2 font-bold ${getSeverityColor('high')}`}>{event.riskScore}/100</span>
                       </div>
                     )}
@@ -203,7 +203,7 @@ const SecurityScenarioAnalysis = () => {
 
       {/* Threat Intelligence */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="card-hover glass-card-lg">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-400" />
@@ -224,16 +224,16 @@ const SecurityScenarioAnalysis = () => {
                 </div>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-slate-400">Threat Type:</span>
-                    <span className="text-slate-300 ml-2">{threat.threatType}</span>
+                    <span className="text-white/60">Threat Type:</span>
+                    <span className="text-white/80 ml-2">{threat.threatType}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400">Last Seen:</span>
-                    <span className="text-slate-300 ml-2">{threat.lastSeen}</span>
+                    <span className="text-white/60">Last Seen:</span>
+                    <span className="text-white/80 ml-2">{threat.lastSeen}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400">Campaigns:</span>
-                    <span className="text-slate-300 ml-2">{threat.associatedCampaigns.join(', ')}</span>
+                    <span className="text-white/60">Campaigns:</span>
+                    <span className="text-white/80 ml-2">{threat.associatedCampaigns.join(', ')}</span>
                   </div>
                 </div>
               </div>
@@ -241,7 +241,7 @@ const SecurityScenarioAnalysis = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="card-hover glass-card-lg">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Bot className="w-5 h-5 text-orange-400" />
@@ -262,16 +262,16 @@ const SecurityScenarioAnalysis = () => {
                 </div>
                 <div className="space-y-2 text-sm mb-3">
                   <div>
-                    <span className="text-slate-400">Confidence:</span>
-                    <span className="text-slate-300 ml-2">{bot.confidence}</span>
+                    <span className="text-white/60">Confidence:</span>
+                    <span className="text-white/80 ml-2">{bot.confidence}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400">Action:</span>
-                    <span className="text-slate-300 ml-2">{bot.recommendedAction}</span>
+                    <span className="text-white/60">Action:</span>
+                    <span className="text-white/80 ml-2">{bot.recommendedAction}</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-slate-400 text-sm mb-2">Detection Reasons:</div>
+                  <div className="text-white/60 text-sm mb-2">Detection Reasons:</div>
                   <div className="flex flex-wrap gap-2">
                     {bot.detectionReasons.map((reason, idx) => (
                       <Badge key={idx} variant="outline" className="text-orange-400 border-orange-400">

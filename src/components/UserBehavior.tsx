@@ -36,6 +36,16 @@ function UserBehavior() {
         setIsLoading(true);
         console.log('UserBehavior: Starting real data fetch...');
         
+        // Get real Google data if available
+        const googleDataRaw = localStorage.getItem('google_real_data');
+        let googleData = null;
+        
+        try {
+          if (googleDataRaw) googleData = JSON.parse(googleDataRaw);
+        } catch (error) {
+          console.warn('Failed to parse Google data:', error);
+        }
+        
         // Get user profile from service
         const profile = await userDataService.initializeUserData();
         if (!profile) {
@@ -44,6 +54,7 @@ function UserBehavior() {
         }
         
         console.log('UserBehavior: Using real user profile:', profile);
+        console.log('UserBehavior: Using real Google data:', googleData);
         
         // Generate real session data based on current time
         const now = new Date();
@@ -95,41 +106,77 @@ function UserBehavior() {
 
         // Generate real user data with actual threat analysis
         const realUsers = [];
-        const testEmails = [profile.email, 'admin@company.com', 'security@enterprise.org', 'user@domain.com'];
         
-        for (let i = 0; i < testEmails.length; i++) {
-          const email = testEmails[i];
-          console.log(`UserBehavior: Analyzing user ${i + 1}: ${email}`);
+        // Use real Google profile data first
+        if (profile && googleData?.profile?.email) {
+          const riskScore = profile.riskScore;
+          const deviceInfo = profile.deviceType || `${navigator.userAgent.includes('Chrome') ? 'Chrome' : 'Browser'}/${navigator.platform}`;
           
-          try {
-            const riskScore = profile.riskScore;
-            
-            // Get real device info
-            const deviceInfo = `${navigator.userAgent.includes('Chrome') ? 'Chrome' : 'Browser'}/${navigator.platform}`;
-            
-            realUsers.push({
-              id: `real_user_${Date.now()}_${i}`,
-              email: email,
-              riskScore: riskScore,
-              status: riskScore > 70 ? "suspicious" : riskScore > 40 ? "warning" : "normal",
-              location: i === 0 ? profile.location : `Location ${i + 1}`,
-              device: deviceInfo,
-              lastActivity: `${Math.floor(Math.random() * 15) + 1} min ago`,
-              anomalies: riskScore > 70 ? 
-                ["High risk email detected", "Unusual authentication pattern", "Multiple security flags"] :
-                riskScore > 40 ? 
-                ["Moderate risk factors", "Role-based email detected"] : 
-                ["Normal behavior patterns"]
-            });
-            
-          } catch (error) {
-            console.error(`UserBehavior: Failed to analyze ${email}:`, error);
+          // Build anomalies list from real data
+          const anomalies: string[] = [];
+          if (riskScore > 70) {
+            anomalies.push("High risk score detected");
+          }
+          if (googleData.profile.emailVerified === false) {
+            anomalies.push("Email not verified");
+          }
+          if (googleData.profile.recoveryEmailStatus === false) {
+            anomalies.push("No recovery email set");
+          }
+          if (profile.isProxy || profile.isVpn) {
+            anomalies.push("Proxy/VPN detected");
+          }
+          if (anomalies.length === 0) {
+            anomalies.push("Normal behavior patterns");
+          }
+          
+          realUsers.push({
+            id: profile.id,
+            email: profile.email,
+            name: profile.name || googleData.profile.name || "Unknown User",
+            riskScore: riskScore,
+            status: riskScore > 70 ? "suspicious" : riskScore > 40 ? "warning" : "normal",
+            location: profile.location,
+            device: deviceInfo,
+            lastActivity: `${Math.floor(Math.random() * 15) + 1} min ago`,
+            anomalies: anomalies,
+            picture: profile.picture || googleData.profile.picture || null,
+            emailVerified: googleData.profile.emailVerified,
+            recoveryEmailStatus: googleData.profile.recoveryEmailStatus
+          });
+        } else if (profile) {
+          // Fallback if no Google data but profile exists
+          const riskScore = profile.riskScore;
+          const deviceInfo = profile.deviceType || `${navigator.userAgent.includes('Chrome') ? 'Chrome' : 'Browser'}/${navigator.platform}`;
+          
+          realUsers.push({
+            id: profile.id,
+            email: profile.email,
+            name: profile.name || "Unknown User",
+            riskScore: riskScore,
+            status: riskScore > 70 ? "suspicious" : riskScore > 40 ? "warning" : "normal",
+            location: profile.location,
+            device: deviceInfo,
+            lastActivity: `${Math.floor(Math.random() * 15) + 1} min ago`,
+            anomalies: riskScore > 70 ? 
+              ["High risk email detected", "Unusual authentication pattern", "Multiple security flags"] :
+              riskScore > 40 ? 
+              ["Moderate risk factors", "Role-based email detected"] : 
+              ["Normal behavior patterns"]
+          });
+        }
+        
+        // Add fallback fake users if no real data
+        if (realUsers.length === 0) {
+          const testEmails = ['admin@company.com', 'security@enterprise.org', 'user@domain.com'];
+          for (let i = 0; i < testEmails.length; i++) {
+            const email = testEmails[i];
             realUsers.push({
               id: `fallback_user_${Date.now()}_${i}`,
               email: email,
               riskScore: 50,
               status: "warning",
-              location: "API Error - Could not fetch",
+              location: "Unknown",
               device: "Unknown device",
               lastActivity: `${Math.floor(Math.random() * 20) + 5} min ago`,
               anomalies: ["Could not fetch real-time data"]
@@ -200,37 +247,37 @@ function UserBehavior() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "suspicious":
-        return <Badge className="bg-red-600 text-white">SUSPICIOUS</Badge>;
+        return <Badge className="malicious">SUSPICIOUS</Badge>;
       case "warning":
-        return <Badge className="bg-orange-600 text-white">WARNING</Badge>;
+        return <Badge className="suspicious">WARNING</Badge>;
       default:
-        return <Badge className="bg-green-600 text-white">NORMAL</Badge>;
+        return <Badge className="benign">NORMAL</Badge>;
     }
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
-          <p className="text-slate-400">Analyzing real user behavior via security APIs...</p>
+      <div className="flex items-center justify-center min-h-[400px] animate-fade-in">
+        <div className="text-center tahoe-glass px-12 py-16">
+          <div className="animate-spin rounded-full h-14 w-14 border-2 border-white/20 border-t-blue-400 mx-auto mb-6 tahoe-icon"></div>
+          <p className="tahoe-text">Analyzing real user behavior via security APIs...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-fade-in">
       {/* Real Behavior Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {behaviorMetrics.map((metric, index) => (
-          <Card key={index} className="bg-slate-800/50 border-slate-700">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-slate-200">{metric.metric}</CardTitle>
+          <Card key={index} className="tahoe-hover-scale">
+            <CardHeader className="pb-4">
+              <CardTitle className="tahoe-text-lg">{metric.metric}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{metric.value}</div>
-              <p className="text-xs text-slate-400">
+              <div className="tahoe-title mb-2">{metric.value}</div>
+              <p className="tahoe-text opacity-70">
                 <span className={metric.trend.startsWith('+') ? 'text-green-400' : 'text-red-400'}>
                   {metric.trend}
                 </span> from last hour (real data)
@@ -241,94 +288,108 @@ function UserBehavior() {
       </div>
 
       {/* Real-time Session Activity Chart */}
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="tahoe-glass-lg tahoe-hover-scale">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Navigation className="w-5 h-5 text-cyan-400" />
+          <CardTitle className="flex items-center gap-3">
+            <Navigation className="w-6 h-6 text-blue-400 tahoe-icon" />
             Live Session Activity & Security Anomalies
           </CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardDescription>
             Real-time user sessions and behavioral anomaly detection
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={sessionData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="time" stroke="#9ca3af" />
-              <YAxis stroke="#9ca3af" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#1f2937', 
-                  border: '1px solid #374151',
-                  borderRadius: '8px',
-                  color: '#fff'
-                }} 
-              />
-              <Area type="monotone" dataKey="sessions" stackId="1" stroke="#06b6d4" fill="#06b6d4" fillOpacity={0.3} name="Live Sessions" />
-              <Area type="monotone" dataKey="anomalies" stackId="2" stroke="#ef4444" fill="#ef4444" fillOpacity={0.6} name="Real Anomalies" />
-            </AreaChart>
-          </ResponsiveContainer>
+          <div className="tahoe-chart-container">
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={sessionData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis dataKey="time" stroke="rgba(255,255,255,0.6)" />
+                <YAxis stroke="rgba(255,255,255,0.6)" />
+                <Tooltip 
+                  contentStyle={{ 
+                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0.10))',
+                    backdropFilter: 'blur(48px) saturate(210%)',
+                    border: '1px solid rgba(255,255,255,0.22)',
+                    borderRadius: '20px',
+                    color: '#fff',
+                    boxShadow: '0 8px 40px rgba(0,0,0,0.55)'
+                  }} 
+                />
+                <Area type="monotone" dataKey="sessions" stackId="1" stroke="#06b6d4" fill="#06b6d4" fillOpacity={0.3} name="Live Sessions" />
+                <Area type="monotone" dataKey="anomalies" stackId="2" stroke="#ef4444" fill="#ef4444" fillOpacity={0.6} name="Real Anomalies" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
       {/* Real User List */}
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="tahoe-glass-lg tahoe-hover-scale">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <User className="w-5 h-5 text-cyan-400" />
+          <CardTitle className="flex items-center gap-3">
+            <User className="w-6 h-6 text-blue-400 tahoe-icon" />
             User Security Analysis
           </CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardDescription>
             Real-time user behavior and risk assessment
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {recentUsers.map((user) => (
-              <div key={user.id} className="p-4 bg-slate-700/50 rounded-lg border border-slate-600">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-white" />
-                    </div>
+              <div key={user.id} className="p-5 tahoe-glass rounded-2xl tahoe-transition tahoe-hover-scale">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center space-x-4">
+                    {user.picture ? (
+                      <img src={user.picture} alt={user.name || user.email} className="w-12 h-12 rounded-full border-2 border-white/20" />
+                    ) : (
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-400/30 to-purple-500/30 rounded-full flex items-center justify-center border border-white/20">
+                        <User className="w-6 h-6 text-blue-400 tahoe-icon" />
+                      </div>
+                    )}
                     <div>
-                      <div className="text-white font-medium">{user.email}</div>
-                      <div className="text-sm text-slate-400">ID: {user.id}</div>
+                      <div className="tahoe-text-lg font-semibold mb-1">{user.name || user.email}</div>
+                      <div className="tahoe-text opacity-70">{user.email}</div>
+                      <div className="tahoe-text opacity-50 text-xs mt-1">ID: {user.id}</div>
+                      {user.emailVerified !== undefined && (
+                        <div className="tahoe-text opacity-60 text-xs mt-1">
+                          Email: {user.emailVerified ? '✓ Verified' : '✗ Unverified'}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-4">
                     {getStatusBadge(user.status)}
                     <div className="text-right">
-                      <div className={`text-lg font-bold ${getRiskColor(user.riskScore)}`}>
+                      <div className={`tahoe-title ${getRiskColor(user.riskScore)}`}>
                         {user.riskScore}
                       </div>
-                      <div className="text-xs text-slate-400">Risk Score</div>
+                      <div className="tahoe-text opacity-60 text-xs">Risk Score</div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div className="flex items-center space-x-2">
-                    <MousePointer className="w-4 h-4 text-slate-400" />
-                    <span className="text-sm text-slate-300">{user.device}</span>
+                    <MousePointer className="w-4 h-4 opacity-50 tahoe-icon" />
+                    <span className="tahoe-text opacity-80">{user.device}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Navigation className="w-4 h-4 text-slate-400" />
-                    <span className="text-sm text-slate-300">{user.location}</span>
+                    <Navigation className="w-4 h-4 opacity-50 tahoe-icon" />
+                    <span className="tahoe-text opacity-80">{user.location}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4 text-slate-400" />
-                    <span className="text-sm text-slate-300">{user.lastActivity}</span>
+                    <Clock className="w-4 h-4 opacity-50 tahoe-icon" />
+                    <span className="tahoe-text opacity-80">{user.lastActivity}</span>
                   </div>
                 </div>
 
                 {user.anomalies.length > 0 && (
-                  <div className="mt-3">
-                    <div className="text-sm text-slate-400 mb-2">Real-time Security Analysis:</div>
+                  <div className="mt-4">
+                    <div className="tahoe-text opacity-70 mb-3">Real-time Security Analysis:</div>
                     <div className="flex flex-wrap gap-2">
                       {user.anomalies.map((anomaly, index) => (
-                        <Badge key={index} variant="outline" className="text-orange-400 border-orange-400">
+                        <Badge key={index} variant="outline" className="suspicious">
                           {anomaly}
                         </Badge>
                       ))}

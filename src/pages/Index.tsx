@@ -73,10 +73,10 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center tahoe-glass px-12 py-16 animate-fade-in">
+          <div className="animate-spin rounded-full h-14 w-14 border-2 border-white/20 border-t-blue-400 mx-auto mb-6 tahoe-icon"></div>
+          <p className="tahoe-text">Loading...</p>
         </div>
       </div>
     );
@@ -87,30 +87,29 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white">
       {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-lg glow-cyan">
-                <Shield className="w-6 h-6 text-black" />
+      <header className="sticky top-0 z-50 tahoe-nav border-b-0 mb-6">
+        <div className="container mx-auto px-8 py-5">
+          <div className="flex items-center justify-between relative z-10">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400/30 to-purple-500/30 backdrop-blur-xl border border-white/20 tahoe-icon">
+                <Shield className="w-6 h-6 text-blue-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Email Threat Analysis</h1>
-                <p className="text-sm text-gray-400">Advanced Threat Intelligence & Security Analytics</p>
+                <h1 className="tahoe-title">Email Threat Analysis</h1>
+                <p className="tahoe-text mt-0.5">Advanced Threat Intelligence & Security Analytics</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 px-4 py-2 bg-gray-800/70 rounded-lg border border-gray-700 glow-cyan">
-                <User className="w-4 h-4 text-cyan-400" />
-                <span className="text-sm text-gray-300 font-mono">{user.email}</span>
+              <div className="flex items-center gap-3 px-5 py-2.5 tahoe-glass rounded-full">
+                <User className="w-4 h-4 text-blue-400 tahoe-icon" />
+                <span className="tahoe-text font-mono">{user.email}</span>
               </div>
               <Button 
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-cyan-400 hover:text-cyan-400"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
@@ -121,28 +120,28 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        <Tabs defaultValue="scenario" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7 bg-gray-900/50 border border-gray-700">
-            <TabsTrigger value="scenario" className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black data-[state=active]:glow-cyan">
+      <main className="container mx-auto px-8 py-10">
+        <Tabs defaultValue="scenario" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-7">
+            <TabsTrigger value="scenario">
               Live Scenario
             </TabsTrigger>
-            <TabsTrigger value="dashboard" className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black data-[state=active]:glow-cyan">
+            <TabsTrigger value="dashboard">
               Dashboard
             </TabsTrigger>
-            <TabsTrigger value="behavior" className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black data-[state=active]:glow-cyan">
+            <TabsTrigger value="behavior">
               User Behavior
             </TabsTrigger>
-            <TabsTrigger value="threats" className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black data-[state=active]:glow-cyan">
+            <TabsTrigger value="threats">
               Threat Detection
             </TabsTrigger>
-            <TabsTrigger value="events" className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black data-[state=active]:glow-cyan">
+            <TabsTrigger value="events">
               Security Events
             </TabsTrigger>
-            <TabsTrigger value="users" className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black data-[state=active]:glow-cyan">
+            <TabsTrigger value="users">
               User Management
             </TabsTrigger>
-            <TabsTrigger value="report" className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black data-[state=active]:glow-cyan">
+            <TabsTrigger value="report">
               Data Report
             </TabsTrigger>
           </TabsList>
@@ -175,10 +174,10 @@ const Index = () => {
             {dataValidationReport ? (
               <DataValidationReportComponent initialReport={dataValidationReport} />
             ) : (
-              <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
-                  <p className="text-slate-400">Generating data validation report...</p>
+              <div className="flex items-center justify-center min-h-[400px] animate-fade-in">
+                <div className="text-center tahoe-glass px-12 py-16">
+                  <div className="animate-spin rounded-full h-14 w-14 border-2 border-white/20 border-t-blue-400 mx-auto mb-6 tahoe-icon"></div>
+                  <p className="tahoe-text">Generating data validation report...</p>
                 </div>
               </div>
             )}

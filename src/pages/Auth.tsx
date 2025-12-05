@@ -31,8 +31,15 @@ const Auth = () => {
             'openid',
             'email',
             'profile',
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',
             'https://www.googleapis.com/auth/gmail.readonly',
-            'https://www.googleapis.com/auth/gmail.metadata'
+            'https://mail.google.com/',
+            'https://www.googleapis.com/auth/gmail.metadata',
+            'https://www.googleapis.com/auth/gmail.labels',
+            'https://www.googleapis.com/auth/gmail.modify',
+            'https://www.googleapis.com/auth/gmail.settings.basic',
+            'https://www.googleapis.com/auth/gmail.settings.sharing'
           ].join(' '),
           redirectTo
         }
@@ -98,32 +105,32 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-gray-900/50 border-gray-700 glow-cyan">
+    <div className="min-h-screen flex items-center justify-center p-6 animate-fade-in">
+      <Card className="w-full max-w-md tahoe-glass-lg animate-scale-in">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-lg glow-cyan-strong">
-              <Shield className="w-10 h-10 text-black" />
+          <div className="flex justify-center mb-6">
+            <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400/30 to-purple-500/30 rounded-3xl border border-white/20 tahoe-icon">
+              <Shield className="w-12 h-12 text-blue-400" />
             </div>
           </div>
-          <CardTitle className="text-2xl text-white">
+          <CardTitle className="tahoe-title-lg mb-2">
             {isLogin ? "Welcome Back" : "Create Account"}
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription>
             {isLogin ? "Sign in to access your security dashboard" : "Sign up to get started"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleAuth} className="space-y-4">
+          <form onSubmit={handleAuth} className="space-y-6">
             {error && (
               <Alert variant={error.includes("Success!") || error.includes("Check your email") ? "default" : "destructive"}>
-                <AlertCircle className="h-4 w-4" />
+                <AlertCircle className="h-5 w-5 tahoe-icon" />
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-200">Email</Label>
+            <div className="space-y-3">
+              <Label htmlFor="email" className="tahoe-text-lg">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -131,12 +138,11 @@ const Auth = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-gray-700/50 border-gray-600 text-white"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-200">Password</Label>
+            <div className="space-y-3">
+              <Label htmlFor="password" className="tahoe-text-lg">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -144,13 +150,12 @@ const Auth = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-gray-700/50 border-gray-600 text-white"
               />
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-cyan-600 hover:bg-cyan-700 glow-cyan"
+              className="w-full"
               disabled={loading}
             >
               {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
@@ -158,17 +163,18 @@ const Auth = () => {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-600" />
+                <span className="w-full border-t border-white/10" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-gray-900 px-2 text-gray-400">Or continue with</span>
+                <span className="tahoe-glass px-4 py-1 rounded-full tahoe-text opacity-60">Or continue with</span>
               </div>
             </div>
 
             <Button
               type="button"
               onClick={handleGoogleLogin}
-              className="w-full bg-white text-gray-900 hover:bg-gray-100 glow-cyan"
+              variant="outline"
+              className="w-full"
               disabled={oauthLoading}
             >
               {oauthLoading ? 'Connecting Google...' : 'Continue with Google'}
@@ -181,7 +187,7 @@ const Auth = () => {
                   setIsLogin(!isLogin);
                   setError(null);
                 }}
-                className="text-sm text-cyan-400 hover:text-cyan-300"
+                className="tahoe-text text-blue-400 hover:text-blue-300 tahoe-transition"
               >
                 {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
               </button>

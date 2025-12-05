@@ -88,20 +88,48 @@ class UserDataService {
     try {
       // Get user email from OAuth or onboarding
       const oauthRaw = localStorage.getItem('oauth_profile');
+      const googleDataRaw = localStorage.getItem('google_real_data');
       const onboardingRaw = localStorage.getItem('userOnboardingData');
       
       let userEmail = 'unable to fetch data';
       let userName = 'unable to fetch data';
       let userPicture = '';
+      let userLocale: string | null = null;
+      let emailVerified: boolean | null = null;
 
-      if (oauthRaw) {
-        const oauth = JSON.parse(oauthRaw);
-        userEmail = oauth.email || 'unable to fetch data';
-        userName = oauth.name || 'unable to fetch data';
-        userPicture = oauth.picture || '';
-      } else if (onboardingRaw) {
-        const onboarding = JSON.parse(onboardingRaw);
-        userEmail = onboarding.email || 'unable to fetch data';
+      // Prioritize real Google data if available
+      if (googleDataRaw) {
+        try {
+          const googleData = JSON.parse(googleDataRaw);
+          userEmail = googleData?.profile?.email || 'unable to fetch data';
+          userName = googleData?.profile?.name || 'unable to fetch data';
+          userPicture = googleData?.profile?.picture || '';
+          userLocale = googleData?.profile?.locale || null;
+          emailVerified = googleData?.profile?.emailVerified || null;
+        } catch (error) {
+          console.warn('Failed to parse Google real data:', error);
+        }
+      }
+
+      // Fallback to OAuth profile
+      if (userEmail === 'unable to fetch data' && oauthRaw) {
+        try {
+          const oauth = JSON.parse(oauthRaw);
+          userEmail = oauth.email || 'unable to fetch data';
+          userName = oauth.name || 'unable to fetch data';
+          userPicture = oauth.picture || '';
+          userLocale = oauth.locale || null;
+          emailVerified = oauth.emailVerified || null;
+        } catch (error) {
+          console.warn('Failed to parse OAuth profile:', error);
+        }
+      } else if (userEmail === 'unable to fetch data' && onboardingRaw) {
+        try {
+          const onboarding = JSON.parse(onboardingRaw);
+          userEmail = onboarding.email || 'unable to fetch data';
+        } catch (error) {
+          console.warn('Failed to parse onboarding data:', error);
+        }
       }
 
       // Get user's IP first
@@ -126,6 +154,47 @@ class UserDataService {
         console.warn('Threat analysis failed, using default risk score:', error);
       }
 
+
+      // Get Gmail metadata and settings if available
+      const gmailMetadataRaw = localStorage.getItem('gmail_metadata');
+      const gmailSettingsRaw = localStorage.getItem('gmail_settings');
+      let gmailMetadata = null;
+      let gmailSettings = null;
+      
+      try {
+        if (gmailMetadataRaw) {
+          gmailMetadata = JSON.parse(gmailMetadataRaw);
+        }
+        if (gmailSettingsRaw) {
+          gmailSettings = JSON.parse(gmailSettingsRaw);
+        }
+      } catch (error) {
+        console.warn('Failed to parse Gmail data:', error);
+      }
+
+      // Adjust risk score based on Gmail metadata
+      if (gmailMetadata) {
+        // Increase risk if suspicious domains found
+        if (gmailMetadata.suspiciousDomains && gmailMetadata.suspiciousDomains.length > 0) {
+          riskScore = Math.min(100, riskScore + (gmailMetadata.suspiciousDomains.length * 5));
+        }
+        // Increase risk if high spam count
+        if (gmailMetadata.totalSpamCount && gmailMetadata.totalSpamCount > 100) {
+          riskScore = Math.min(100, riskScore + 10);
+        }
+      }
+
+      // Adjust risk score based on Gmail settings
+      if (gmailSettings) {
+        // Increase risk if forwarding is enabled (potential security risk)
+        if (gmailSettings.forwardingEnabled) {
+          riskScore = Math.min(100, riskScore + 5);
+        }
+        // Increase risk if delegated accounts exist
+        if (gmailSettings.delegatedAccounts && gmailSettings.delegatedAccounts.length > 0) {
+          riskScore = Math.min(100, riskScore + (gmailSettings.delegatedAccounts.length * 3));
+        }
+      }
 
       // Create user profile with comprehensive real data
       this.userProfile = {
@@ -157,6 +226,12 @@ class UserDataService {
         riskScore,
         riskLevel: riskScore > 70 ? 'Critical' : riskScore > 40 ? 'High' : 'Medium'
       };
+
+      // Store Gmail data in profile for easy access (extend UserProfile type if needed)
+      (this.userProfile as any).gmailMetadata = gmailMetadata;
+      (this.userProfile as any).gmailSettings = gmailSettings;
+      (this.userProfile as any).locale = userLocale;
+      (this.userProfile as any).emailVerified = emailVerified;
 
       // Generate security events with real data
       this.securityEvents = [
