@@ -7,7 +7,7 @@ import { User, Search, Clock, MousePointer, Navigation } from "lucide-react";
 import { useState, useEffect } from "react";
 import { userDataService } from "@/services/userDataService";
 
-const UserBehavior = () => {
+function UserBehavior() {
   const [searchUser, setSearchUser] = useState("");
   const [sessionData, setSessionData] = useState<any[]>([]);
   const [behaviorMetrics, setBehaviorMetrics] = useState<any[]>([]);
@@ -272,33 +272,18 @@ const UserBehavior = () => {
         </CardContent>
       </Card>
 
-      {/* Real User Analysis */}
+      {/* Real User List */}
       <Card className="bg-slate-800/50 border-slate-700">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <User className="w-5 h-5 text-cyan-400" />
-            Live User Security Analysis
+            User Security Analysis
           </CardTitle>
           <CardDescription className="text-slate-400">
-            Real-time user patterns and risk assessments from security APIs
+            Real-time user behavior and risk assessment
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Search Bar */}
-          <div className="flex space-x-2 mb-6">
-            <Input
-              placeholder="Search by user ID, email, or IP address..."
-              value={searchUser}
-              onChange={(e) => setSearchUser(e.target.value)}
-              className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
-            />
-            <Button className="bg-cyan-600 hover:bg-cyan-700">
-              <Search className="w-4 h-4 mr-2" />
-              Search
-            </Button>
-          </div>
-
-          {/* Real User List */}
           <div className="space-y-4">
             {recentUsers.map((user) => (
               <div key={user.id} className="p-4 bg-slate-700/50 rounded-lg border border-slate-600">
@@ -318,7 +303,7 @@ const UserBehavior = () => {
                       <div className={`text-lg font-bold ${getRiskColor(user.riskScore)}`}>
                         {user.riskScore}
                       </div>
-                      <div className="text-xs text-slate-400">Real Risk Score</div>
+                      <div className="text-xs text-slate-400">Risk Score</div>
                     </div>
                   </div>
                 </div>
@@ -357,6 +342,6 @@ const UserBehavior = () => {
       </Card>
     </div>
   );
-};
+}
 
 export default UserBehavior;

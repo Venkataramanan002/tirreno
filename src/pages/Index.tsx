@@ -49,7 +49,7 @@ const Index = () => {
         try {
           const enrichmentData = await dataAggregationService.getUnifiedEnrichmentData();
           if (enrichmentData) {
-            const report = DataValidationReportService.generateReport(enrichmentData);
+            const report = await DataValidationReportService.generateRealReport();
             setDataValidationReport(report);
           }
         } catch (error) {
@@ -65,6 +65,12 @@ const Index = () => {
     navigate("/auth");
   };
 
+  useEffect(() => {
+    if (!user && !loading) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
@@ -77,7 +83,6 @@ const Index = () => {
   }
 
   if (!user) {
-    navigate("/auth");
     return null;
   }
 
@@ -92,7 +97,7 @@ const Index = () => {
                 <Shield className="w-6 h-6 text-black" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Tirreno User Shield</h1>
+                <h1 className="text-2xl font-bold text-white">Email Threat Analysis</h1>
                 <p className="text-sm text-gray-400">Advanced Threat Intelligence & Security Analytics</p>
               </div>
             </div>
@@ -168,7 +173,7 @@ const Index = () => {
 
           <TabsContent value="report">
             {dataValidationReport ? (
-              <DataValidationReportComponent report={dataValidationReport} />
+              <DataValidationReportComponent initialReport={dataValidationReport} />
             ) : (
               <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">

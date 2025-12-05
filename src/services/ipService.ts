@@ -57,32 +57,61 @@ interface IPAPIResponse {
 const CACHE_KEY = 'userNetworkInfoCacheV2';
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-export async function getCachedNetworkInfo(fetchers: {
-  getIP: () => Promise<string>;
-  getLocation: (ip: string) => Promise<string | undefined>;
-}): Promise<UserNetworkInfo> {
-  try {
-    const cachedRaw = localStorage.getItem(CACHE_KEY);
-    if (cachedRaw) {
-      const cached: UserNetworkInfo = JSON.parse(cachedRaw);
-      if (Date.now() - cached.resolvedAt < CACHE_TTL_MS && cached.ip) {
-        return cached;
-      }
+// Define fetchers for IP and location data
+const fetchers = {
+  async getIP(): Promise<string> {
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      console.error('Error fetching IP:', error);
+      return '192.168.1.1'; // Fallback IP
     }
-  } catch {}
+  },
+  
+  async getLocation(ip: string): Promise<string> {
+    try {
+      const response = await fetch(`https://ipinfo.io/${ip}/json?token=${API_KEYS.IPINFO_TOKEN}`);
+      const data = await response.json();
+      return `${data.city}, ${data.region}, ${data.country}`;
+    } catch (error) {
+      console.error('Error fetching location:', error);
+      return 'Unknown Location';
+    }
+  }
+};
 
-  const ip = await fetchers.getIP();
-  let location: string | undefined = undefined;
-  try {
-    location = await fetchers.getLocation(ip);
-  } catch {}
+export const ipService = {
+  async getIPData(forceReal = false): Promise<any> {
+    try {
+      // Try to get from cache first, unless forceReal is true
+      const cachedData = localStorage.getItem('ipData');
+      if (!forceReal && cachedData) {
+        const parsedData = JSON.parse(cachedData);
+        // Check if data is less than 1 hour old
+        if (parsedData.timestamp && (Date.now() - parsedData.timestamp < 3600000)) {
+          return parsedData;
+        }
+      }
 
-  const info: UserNetworkInfo = { ip, location, resolvedAt: Date.now() };
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(info));
-  } catch {}
-  return info;
-}
+      const ip = await fetchers.getIP();
+      let location: string | undefined = undefined;
+      try {
+        location = await fetchers.getLocation(ip);
+      } catch {}
+
+      const info: UserNetworkInfo = { ip, location, resolvedAt: Date.now() };
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(info));
+      } catch {}
+      return info;
+    } catch (error) {
+      console.error("Error fetching IP data:", error);
+      return null;
+    }
+  }
+};
 
 export async function getComprehensiveNetworkInfo(ip: string): Promise<UserNetworkInfo> {
   try {

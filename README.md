@@ -1,73 +1,10 @@
-# Welcome to your Lovable project
+Create a professional, visually appealing presentation for my cybersecurity platform, Tirreno. Highlight that it is an AI-driven platform providing comprehensive security analysis, including email threat analysis, IP intelligence, and behavioral monitoring. Showcase its purpose: helping users identify potential security risks and validate data authenticity. Include slides covering:
 
-## Project info
+- Real-time AI-powered threat detection and analysis
+- Data validation reporting with authenticity verification
+- User behavior monitoring and risk assessment
+- Multi-source intelligence correlation for full security insights
 
-**URL**: https://lovable.dev/projects/7d5ed0d2-bb2a-4101-a9e5-ad653fc21d7b
+Showcase key features like email reputation checks, IP geolocation and reputation, device fingerprinting, phone/social media/Gov ID verification, and AI-based risk scoring. Include threat detection capabilities such as malicious traffic identification, VPN/Proxy/Tor detection, bot detection, and detailed AI-generated risk scoring. Highlight user experience features: interactive dashboards, tabbed UI, real-time updates, and downloadable reports (JSON, PDF, plain text).
 
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/7d5ed0d2-bb2a-4101-a9e5-ad653fc21d7b) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/7d5ed0d2-bb2a-4101-a9e5-ad653fc21d7b) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Use modern design with consistent color themes, relevant icons/images, and visual graphs. Make the presentation engaging, easy to download or embed, and accurate. Provide clear titles, concise explanations, and logical slide organization suitable for a web audience.

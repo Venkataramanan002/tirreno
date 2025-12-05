@@ -196,7 +196,7 @@ const UserManagement = () => {
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <User className="w-5 h-5 text-cyan-400" />
-            User Risk Management
+            Data-Driven Risk Assessment
           </CardTitle>
           <CardDescription className="text-slate-400">
             Monitor and manage user accounts based on risk assessment and behavior analysis
