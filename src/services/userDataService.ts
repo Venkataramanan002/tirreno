@@ -1,4 +1,4 @@
-import { getCachedNetworkInfo, getComprehensiveNetworkInfo } from './ipService';
+import { getComprehensiveNetworkInfo } from './ipService';
 import { ThreatAnalysisService } from './threatAnalysisService';
 
 export interface PhoneValidationInfo {

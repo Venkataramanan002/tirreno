@@ -166,7 +166,7 @@ class ThreatIntelligenceService {
         alienvault: alienvault.status === 'fulfilled' ? alienvault.value : undefined,
         ipapi: ipapi.status === 'fulfilled' ? ipapi.value : undefined,
         riskScore: 0,
-        riskLevel: 'unknown',
+        riskLevel: 'low',
         classification: 'unknown',
         lastUpdated: Date.now(),
         sources: []

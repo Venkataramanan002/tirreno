@@ -2,7 +2,6 @@ import { threatIntelligenceService, ThreatIntelligenceData } from './threatIntel
 import { behaviorTrackingService, SessionData } from './behaviorTrackingService';
 import { userDataService, UserProfile } from './userDataService';
 import { ThreatAnalysisService } from './threatAnalysisService';
-import { PhoneValidationService } from './phoneValidationService';
 
 export interface UnifiedEnrichmentData {
   // User Profile
