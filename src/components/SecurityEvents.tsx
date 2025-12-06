@@ -313,68 +313,68 @@ const SecurityEvents = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px] animate-fade-in">
+      <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-14 w-14 border-2 border-white/20 border-t-cyan-400 mx-auto mb-6"></div>
-          <p className="ios-text text-white/70">Loading security events...</p>
+          <p className="ios-text tahoe-text">Loading security events...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8">
       {/* Event Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="card-hover">
           <CardHeader className="pb-4">
-            <CardTitle className="ios-text text-white/90">Total Events</CardTitle>
+            <CardTitle className="ios-text tahoe-text">Total Events</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="ios-title text-white mb-2">{summaryStats.totalEvents}</div>
-            <p className="ios-text text-white/50">Last 24 hours</p>
+            <div className="ios-title tahoe-text mb-2">{summaryStats.totalEvents}</div>
+            <p className="ios-text tahoe-text">Last 24 hours</p>
           </CardContent>
         </Card>
 
         <Card className="card-hover">
           <CardHeader className="pb-4">
-            <CardTitle className="ios-text text-white/90">High Severity</CardTitle>
+            <CardTitle className="ios-text tahoe-text">High Severity</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="ios-title text-red-400 mb-2">{summaryStats.highSeverity}</div>
-            <p className="ios-text text-white/50">Require immediate attention</p>
+            <p className="ios-text tahoe-text">Require immediate attention</p>
           </CardContent>
         </Card>
 
         <Card className="card-hover">
           <CardHeader className="pb-4">
-            <CardTitle className="ios-text text-white/90">Blocked</CardTitle>
+            <CardTitle className="ios-text tahoe-text">Blocked</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="ios-title text-green-400 mb-2">{summaryStats.blocked}</div>
-            <p className="ios-text text-white/50">Automatically blocked</p>
+            <p className="ios-text tahoe-text">Automatically blocked</p>
           </CardContent>
         </Card>
 
         <Card className="card-hover">
           <CardHeader className="pb-4">
-            <CardTitle className="ios-text text-white/90">Under Investigation</CardTitle>
+            <CardTitle className="ios-text tahoe-text">Under Investigation</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="ios-title text-purple-400 mb-2">{summaryStats.investigating}</div>
-            <p className="ios-text text-white/50">Manual review required</p>
+            <p className="ios-text tahoe-text">Manual review required</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Filters and Search */}
       <Card className="card-hover glass-card-lg">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-3">
+          <CardHeader>
+            <CardTitle className="tahoe-text flex items-center gap-3">
             <AlertTriangle className="w-6 h-6 text-cyan-400" />
             Security Events Feed
           </CardTitle>
-          <CardDescription className="text-white/60">
+            <CardDescription className="tahoe-text">
             Real-time security events and threat incidents
           </CardDescription>
         </CardHeader>
@@ -383,7 +383,7 @@ const SecurityEvents = () => {
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/50 w-5 h-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 tahoe-icon" />
                 <Input
                   placeholder="Search events by type, user, or IP address..."
                   value={searchTerm}
@@ -474,7 +474,7 @@ const SecurityEvents = () => {
           </div>
 
           {filteredEvents.length === 0 && (
-            <div className="text-center py-12 animate-fade-in">
+            <div className="text-center py-12">
               <AlertTriangle className="w-16 h-16 text-white/30 mx-auto mb-6" />
               <p className="ios-text text-white/60">No security events match your current filters.</p>
             </div>

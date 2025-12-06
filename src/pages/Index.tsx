@@ -74,7 +74,7 @@ const Index = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center tahoe-glass px-12 py-16 animate-fade-in">
+        <div className="text-center tahoe-glass px-12 py-16">
           <div className="animate-spin rounded-full h-14 w-14 border-2 border-white/20 border-t-blue-400 mx-auto mb-6 tahoe-icon"></div>
           <p className="tahoe-text">Loading...</p>
         </div>
@@ -87,7 +87,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen relative z-20">
       {/* Header */}
       <header className="sticky top-0 z-50 tahoe-nav border-b-0 mb-6">
         <div className="container mx-auto px-8 py-5">
@@ -171,16 +171,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="report">
-            {dataValidationReport ? (
-              <DataValidationReportComponent initialReport={dataValidationReport} />
-            ) : (
-              <div className="flex items-center justify-center min-h-[400px] animate-fade-in">
-                <div className="text-center tahoe-glass px-12 py-16">
-                  <div className="animate-spin rounded-full h-14 w-14 border-2 border-white/20 border-t-blue-400 mx-auto mb-6 tahoe-icon"></div>
-                  <p className="tahoe-text">Generating data validation report...</p>
-                </div>
-              </div>
-            )}
+            <DataValidationReportComponent initialReport={dataValidationReport} />
           </TabsContent>
         </Tabs>
       </main>

@@ -17,7 +17,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "tahoe-input flex h-11 w-full items-center justify-between tahoe-text placeholder:text-white/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 relative z-10",
+      "tahoe-input flex h-11 w-full items-center justify-between tahoe-text placeholder:text-[rgba(0,0,0,0.55)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 relative z-10",
       className
     )}
     {...props}
@@ -73,7 +73,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden tahoe-glass-lg text-white data-[state=open]:animate-scale-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden tahoe-glass-lg tahoe-text data-[state=open]:animate-scale-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
         className
@@ -116,7 +116,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-xl py-3 pl-10 pr-4 tahoe-text outline-none focus:bg-white/10 focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50 tahoe-transition relative z-10",
+      "relative flex w-full cursor-default select-none items-center rounded-xl py-3 pl-10 pr-4 tahoe-text outline-none focus:bg-[rgba(255,255,255,0.06)] focus:text-[rgba(0,0,0,0.85)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 tahoe-transition relative z-10",
       className
     )}
     {...props}

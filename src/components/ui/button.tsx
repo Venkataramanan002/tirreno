@@ -5,18 +5,18 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap tahoe-text font-semibold ring-offset-background tahoe-transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 relative z-10",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap tahoe-transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 relative z-10",
   {
     variants: {
       variant: {
-        default: "tahoe-button-primary text-white",
+        default: "tahoe-button tahoe-button-primary",
         destructive:
-          "tahoe-button bg-gradient-to-b from-red-500/25 to-red-500/20 border-red-500/50 text-red-300 hover:from-red-500/35 hover:to-red-500/30",
+          "tahoe-button",
         outline:
-          "tahoe-button text-white",
+          "tahoe-button",
         secondary:
-          "tahoe-button text-white/90",
-        ghost: "tahoe-button bg-transparent border-transparent text-white/80 hover:bg-white/10",
+          "tahoe-button",
+        ghost: "tahoe-button",
         link: "text-primary underline-offset-4 hover:underline bg-transparent border-transparent",
       },
       size: {

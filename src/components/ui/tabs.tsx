@@ -27,7 +27,7 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 py-3 tahoe-text font-semibold tahoe-transition focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:tahoe-tab-active data-[state=inactive]:text-white/60 hover:text-white/90 relative z-10",
+      "inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 py-3 tahoe-text font-semibold tahoe-transition focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:tahoe-tab-active data-[state=inactive]:opacity-75 hover:opacity-95 relative z-10",
       className
     )}
     {...props}
@@ -42,7 +42,7 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      "mt-6 animate-fade-in focus-visible:outline-none",
+      "mt-6 focus-visible:outline-none",
       className
     )}
     {...props}

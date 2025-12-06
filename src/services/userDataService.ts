@@ -1,6 +1,13 @@
 import { getCachedNetworkInfo, getComprehensiveNetworkInfo } from './ipService';
 import { ThreatAnalysisService } from './threatAnalysisService';
 
+export interface PhoneValidationInfo {
+  isValid?: boolean;
+  riskScore?: number;
+  carrier?: string;
+  country?: string;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -25,6 +32,7 @@ export interface UserProfile {
   isTor?: boolean;
   isHosting?: boolean;
   networkThreatLevel?: 'low' | 'medium' | 'high' | 'critical';
+  phoneValidation?: PhoneValidationInfo;
   deviceFingerprint: string;
   sessionStart: string;
   riskScore: number;

@@ -105,8 +105,8 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 animate-fade-in">
-      <Card className="w-full max-w-md tahoe-glass-lg animate-scale-in">
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <Card className="w-full max-w-md tahoe-glass-lg">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-6">
             <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400/30 to-purple-500/30 rounded-3xl border border-white/20 tahoe-icon">

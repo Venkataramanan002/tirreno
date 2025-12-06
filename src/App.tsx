@@ -20,7 +20,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen tahoe-text relative z-20 no-flash">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />

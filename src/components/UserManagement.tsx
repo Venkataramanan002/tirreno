@@ -283,68 +283,68 @@ const UserManagement = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px] animate-fade-in">
+      <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-14 w-14 border-2 border-white/20 border-t-cyan-400 mx-auto mb-6"></div>
-          <p className="ios-text text-white/70">Loading user data...</p>
+          <p className="ios-text tahoe-text">Loading user data...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8">
       {/* User Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="card-hover">
           <CardHeader className="pb-4">
-            <CardTitle className="ios-text text-white/90">Total Users</CardTitle>
+            <CardTitle className="ios-text tahoe-text">Total Users</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="ios-title text-white mb-2">{summaryStats.totalUsers}</div>
-            <p className="ios-text text-white/50">Active accounts</p>
+            <div className="ios-title tahoe-text mb-2">{summaryStats.totalUsers}</div>
+            <p className="ios-text tahoe-text">Active accounts</p>
           </CardContent>
         </Card>
 
         <Card className="card-hover">
           <CardHeader className="pb-4">
-            <CardTitle className="ios-text text-white/90">Blocked Users</CardTitle>
+            <CardTitle className="ios-text tahoe-text">Blocked Users</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="ios-title text-red-400 mb-2">{summaryStats.blockedUsers}</div>
-            <p className="ios-text text-white/50">Security violations</p>
+            <p className="ios-text tahoe-text">Security violations</p>
           </CardContent>
         </Card>
 
         <Card className="card-hover">
           <CardHeader className="pb-4">
-            <CardTitle className="ios-text text-white/90">Suspicious Users</CardTitle>
+            <CardTitle className="ios-text tahoe-text">Suspicious Users</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="ios-title text-orange-400 mb-2">{summaryStats.suspiciousUsers}</div>
-            <p className="ios-text text-white/50">Require attention</p>
+            <p className="ios-text tahoe-text">Require attention</p>
           </CardContent>
         </Card>
 
         <Card className="card-hover">
           <CardHeader className="pb-4">
-            <CardTitle className="ios-text text-white/90">Avg Risk Score</CardTitle>
+            <CardTitle className="ios-text tahoe-text">Avg Risk Score</CardTitle>
           </CardHeader>
           <CardContent>
             <div className={`ios-title ${getRiskScoreColor(summaryStats.avgRiskScore)} mb-2`}>{summaryStats.avgRiskScore}</div>
-            <p className="ios-text text-white/50">Overall risk level</p>
+            <p className="ios-text tahoe-text">Overall risk level</p>
           </CardContent>
         </Card>
       </div>
 
       {/* User Management Interface */}
       <Card className="card-hover glass-card-lg">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-3">
+          <CardHeader>
+          <CardTitle className="tahoe-text flex items-center gap-3">
             <User className="w-6 h-6 text-cyan-400" />
             Data-Driven Risk Assessment
           </CardTitle>
-          <CardDescription className="text-white/60">
+          <CardDescription className="tahoe-text">
             Monitor and manage user accounts based on risk assessment and behavior analysis
           </CardDescription>
         </CardHeader>
@@ -353,7 +353,7 @@ const UserManagement = () => {
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/50 w-5 h-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 tahoe-icon" />
                 <Input
                   placeholder="Search by email, name, or user ID..."
                   value={searchTerm}
@@ -395,16 +395,16 @@ const UserManagement = () => {
                       </div>
                     )}
                     <div>
-                      <div className="ios-text-lg text-white font-semibold mb-1">{user.name}</div>
-                      <div className="ios-text text-white/60">{user.email}</div>
-                      <div className="ios-text text-white/40 text-xs mt-1">ID: {user.id}</div>
+                      <div className="ios-text-lg tahoe-text font-semibold mb-1">{user.name}</div>
+                      <div className="ios-text tahoe-text">{user.email}</div>
+                      <div className="ios-text tahoe-text text-xs mt-1">ID: {user.id}</div>
                       {user.emailVerified !== undefined && (
-                        <div className="ios-text text-white/50 text-xs mt-1">
+                        <div className="ios-text tahoe-text text-xs mt-1">
                           Email: {user.emailVerified ? '✓ Verified' : '✗ Unverified'}
                         </div>
                       )}
                       {user.recoveryEmailStatus !== undefined && (
-                        <div className="ios-text text-white/50 text-xs mt-1">
+                        <div className="ios-text tahoe-text text-xs mt-1">
                           Recovery Email: {user.recoveryEmailStatus ? '✓ Set' : '✗ Not Set'}
                         </div>
                       )}
@@ -413,10 +413,10 @@ const UserManagement = () => {
                   <div className="flex items-center space-x-4">
                     {getStatusBadge(user.status)}
                     <div className="text-right">
-                      <div className={`ios-title text-white ${getRiskScoreColor(user.riskScore)}`}>
+                      <div className={`ios-title ${getRiskScoreColor(user.riskScore)} tahoe-text`}>
                         {user.riskScore}
                       </div>
-                      <div className="ios-text text-white/50 text-xs">{getRiskLevel(user.riskScore)} RISK</div>
+                      <div className="ios-text tahoe-text text-xs">{getRiskLevel(user.riskScore)} RISK</div>
                     </div>
                   </div>
                 </div>
@@ -424,7 +424,7 @@ const UserManagement = () => {
                 {/* Risk Score Progress Bar */}
                 <div className="mb-5">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="ios-text text-white/60">Risk Score</span>
+                    <span className="ios-text tahoe-text">Risk Score</span>
                     <span className={`ios-text font-semibold ${getRiskScoreColor(user.riskScore)}`}>
                       {user.riskScore}/100
                     </span>
@@ -437,24 +437,24 @@ const UserManagement = () => {
                 {/* User Details Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
                   <div className="flex items-center space-x-3">
-                    <Clock className="w-5 h-5 text-white/50" />
+                    <Clock className="w-5 h-5 tahoe-icon" />
                     <div>
-                      <div className="ios-text text-white/50 text-xs">Last Login</div>
-                      <div className="ios-text text-white/90">{user.lastLogin}</div>
+                      <div className="ios-text tahoe-text text-xs">Last Login</div>
+                      <div className="ios-text tahoe-text">{user.lastLogin}</div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <MapPin className="w-5 h-5 text-white/50" />
+                    <MapPin className="w-5 h-5 tahoe-icon" />
                     <div>
-                      <div className="ios-text text-white/50 text-xs">Location</div>
-                      <div className="ios-text text-white/90">{user.location}</div>
+                      <div className="ios-text tahoe-text text-xs">Location</div>
+                      <div className="ios-text tahoe-text">{user.location}</div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Shield className="w-5 h-5 text-white/50" />
+                    <Shield className="w-5 h-5 tahoe-icon" />
                     <div>
-                      <div className="ios-text text-white/50 text-xs">Account Age</div>
-                      <div className="ios-text text-white/90">{user.accountAge}</div>
+                      <div className="ios-text tahoe-text text-xs">Account Age</div>
+                      <div className="ios-text tahoe-text">{user.accountAge}</div>
                     </div>
                   </div>
                 </div>
@@ -462,16 +462,16 @@ const UserManagement = () => {
                 {/* Activity Stats */}
                 <div className="grid grid-cols-3 gap-4 mb-5">
                   <div className="text-center p-4 glass rounded-xl border border-white/10">
-                    <div className="ios-title text-white mb-1">{user.totalSessions}</div>
-                    <div className="ios-text text-white/50 text-xs">Total Sessions</div>
+                    <div className="ios-title tahoe-text mb-1">{user.totalSessions}</div>
+                    <div className="ios-text tahoe-text text-xs">Total Sessions</div>
                   </div>
                   <div className="text-center p-4 glass rounded-xl border border-white/10">
                     <div className="ios-title text-orange-400 mb-1">{user.flaggedActivities}</div>
-                    <div className="ios-text text-white/50 text-xs">Flagged Activities</div>
+                    <div className="ios-text tahoe-text text-xs">Flagged Activities</div>
                   </div>
                   <div className="text-center p-4 glass rounded-xl border border-white/10">
-                    <div className="ios-text-lg text-white/90 font-semibold mb-1">{user.device}</div>
-                    <div className="ios-text text-white/50 text-xs">Primary Device</div>
+                    <div className="ios-text-lg tahoe-text font-semibold mb-1">{user.device}</div>
+                    <div className="ios-text tahoe-text text-xs">Primary Device</div>
                   </div>
                 </div>
 
@@ -515,7 +515,7 @@ const UserManagement = () => {
           </div>
 
           {filteredUsers.length === 0 && (
-            <div className="text-center py-12 animate-fade-in">
+            <div className="text-center py-12">
               <User className="w-16 h-16 text-white/30 mx-auto mb-6" />
               <p className="ios-text text-white/60">No users match your current filters.</p>
             </div>

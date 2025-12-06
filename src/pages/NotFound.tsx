@@ -12,7 +12,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center animate-fade-in">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="text-center tahoe-glass-lg p-12">
         <h1 className="tahoe-title-lg mb-6">404</h1>
         <p className="tahoe-text-lg opacity-70 mb-8">Oops! Page not found</p>

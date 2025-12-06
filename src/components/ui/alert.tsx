@@ -8,9 +8,9 @@ const alertVariants = cva(
   {
     variants: {
       variant: {
-        default: "text-white",
+        default: "tahoe-text",
         destructive:
-          "bg-gradient-to-b from-red-500/25 to-red-500/20 backdrop-filter blur(48px) border-red-500/50 text-red-300 [&>svg]:text-red-400",
+          "tahoe-glass border-red-500/40 tahoe-text text-red-400 [&>svg]:text-red-400",
       },
     },
     defaultVariants: {

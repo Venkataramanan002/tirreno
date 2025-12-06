@@ -85,11 +85,11 @@ const FirebaseTestPage: React.FC = () => {
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl bg-gray-900/50 border-gray-700">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="tahoe-text flex items-center gap-2">
             <Shield className="w-5 h-5 text-cyan-400" />
             Firebase Configuration Test
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription className="tahoe-text">
             This page helps debug Firebase phone authentication issues
           </CardDescription>
         </CardHeader>
@@ -97,7 +97,7 @@ const FirebaseTestPage: React.FC = () => {
           <Button
             onClick={runTests}
             disabled={isLoading}
-            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
+            className="w-full bg-cyan-600 hover:bg-cyan-700"
           >
             {isLoading ? (
               <>
@@ -114,7 +114,7 @@ const FirebaseTestPage: React.FC = () => {
 
           {testResults.length > 0 && (
             <div className="space-y-2">
-              <h3 className="text-white font-medium">Test Results:</h3>
+              <h3 className="tahoe-text font-medium">Test Results:</h3>
               <div className="bg-gray-800 p-4 rounded-lg max-h-96 overflow-y-auto">
                 {testResults.map((result, index) => (
                   <div key={index} className="text-sm text-gray-300 mb-1">
@@ -140,7 +140,7 @@ const FirebaseTestPage: React.FC = () => {
             <Button
               onClick={() => window.location.href = '/auth'}
               variant="outline"
-              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+              className="border-gray-600 hover:bg-gray-800"
             >
               Back to Auth Page
             </Button>

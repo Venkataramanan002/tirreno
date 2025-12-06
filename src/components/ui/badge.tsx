@@ -9,12 +9,12 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "tahoe-glass border-white/25 text-white",
+          "tahoe-glass border-[rgba(255,255,255,0.35)] tahoe-text",
         secondary:
-          "tahoe-glass border-white/20 text-white/90",
+          "tahoe-glass border-[rgba(255,255,255,0.25)] tahoe-text",
         destructive:
-          "bg-gradient-to-b from-red-500/25 to-red-500/20 backdrop-filter blur(20px) border-red-500/50 text-red-300",
-        outline: "tahoe-glass border-white/25 text-white/90",
+          "tahoe-glass border-red-500/40 text-red-400",
+        outline: "tahoe-glass border-[rgba(255,255,255,0.35)] tahoe-text",
       },
     },
     defaultVariants: {

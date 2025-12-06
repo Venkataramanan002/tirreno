@@ -54,37 +54,31 @@
   }
 
   body {
-    @apply text-white;
-    background: 
-      /* Deep black gradient */
-      linear-gradient(135deg, #050505 0%, #0E0E10 100%),
-      /* Plasma glow layer 1 */
-      radial-gradient(circle at 20% 10%, rgba(79,140,255,0.25), transparent 60%),
-      /* Plasma glow layer 2 */
-      radial-gradient(circle at 80% 20%, rgba(255,76,139,0.25), transparent 65%),
-      /* Noise texture */
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+    color: rgba(0,0,0,0.85);
+    background-image: url('/background/macOS Tahoe 26 Wallpapers.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     background-attachment: fixed;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.2px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
     position: relative;
   }
 
-  body::before {
+  body::after {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-      radial-gradient(circle at 20% 10%, rgba(79,140,255,0.15), transparent 60%),
-      radial-gradient(circle at 80% 20%, rgba(255,76,139,0.15), transparent 65%);
+    background: linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4));
     pointer-events: none;
     z-index: 0;
-    animation: noise 20s infinite;
   }
 
   /* macOS Sequoia scrollbar */
@@ -116,21 +110,15 @@
   /* macOS Sequoia Tahoe Liquid Glass Panel */
   .tahoe-glass {
     position: relative;
-    background: 
-      linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.06) 0%,
-        rgba(255,255,255,0.10) 100%
-      );
-    backdrop-filter: blur(48px) saturate(210%) brightness(130%);
-    -webkit-backdrop-filter: blur(48px) saturate(210%) brightness(130%);
-    border: 1px solid rgba(255,255,255,0.22);
-    border-radius: 30px;
-    box-shadow: 
-      inset 0 1px 0px rgba(255,255,255,0.35),
-      0 8px 40px rgba(0,0,0,0.55);
-    transition: all 240ms cubic-bezier(0.25,0.1,0.25,1.0);
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 22px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    transition: all 0.25s ease;
     overflow: hidden;
+    color: rgba(0,0,0,0.85);
   }
 
   .tahoe-glass::before {
@@ -139,52 +127,42 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 40%;
-    background: linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.18),
-      rgba(255,255,255,0.05) 40%,
-      transparent
-    );
+    height: 35%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.22), transparent);
     pointer-events: none;
     z-index: 1;
   }
 
   .tahoe-glass:hover {
-    transform: scale(1.018);
-    backdrop-filter: blur(52px) saturate(220%) brightness(135%);
-    -webkit-backdrop-filter: blur(52px) saturate(220%) brightness(135%);
-    box-shadow: 
-      inset 0 1px 0px rgba(255,255,255,0.4),
-      0 12px 50px rgba(0,0,0,0.6),
-      0 0 0 1px rgba(120,180,255,0.15);
+    transform: scale(1.01);
+    box-shadow: 0 22px 48px rgba(0,0,0,0.10);
   }
 
   /* Large Tahoe Glass */
   .tahoe-glass-lg {
-    border-radius: 34px;
-    backdrop-filter: blur(60px) saturate(220%) brightness(135%);
-    -webkit-backdrop-filter: blur(60px) saturate(220%) brightness(135%);
+    border-radius: 22px;
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
   }
 
   /* Floating Navigation Bar */
   .tahoe-nav {
-    background: 
-      linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.08) 0%,
-        rgba(255,255,255,0.12) 100%
-      );
-    backdrop-filter: blur(60px) saturate(220%) brightness(135%);
-    -webkit-backdrop-filter: blur(60px) saturate(220%) brightness(135%);
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 30px;
-    box-shadow: 
-      inset 0 1px 0px rgba(255,255,255,0.4),
-      0 12px 50px rgba(0,0,0,0.6);
-    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 22px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    padding: 12px 16px;
     margin: 20px auto;
     max-width: calc(100% - 40px);
+    color: rgba(0,0,0,0.85);
   }
 
   /* Active Tab with Neon Edge */
@@ -207,24 +185,22 @@
   /* macOS Sequoia Liquid Button */
   .tahoe-button {
     position: relative;
-    background: 
-      linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.08) 0%,
-        rgba(255,255,255,0.12) 100%
-      );
-    backdrop-filter: blur(48px) saturate(210%) brightness(130%);
-    -webkit-backdrop-filter: blur(48px) saturate(210%) brightness(130%);
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 9999px;
-    padding: 12px 28px;
-    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.16) 100%);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 22px;
+    padding: 12px 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.2px;
     font-size: 15px;
-    color: white;
-    transition: all 240ms cubic-bezier(0.25,0.1,0.25,1.0);
-    box-shadow: 
-      inset 0 1px 0px rgba(255,255,255,0.3),
-      0 4px 20px rgba(0,0,0,0.4);
+    color: rgba(0,0,0,0.85);
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     overflow: hidden;
   }
 
@@ -234,29 +210,15 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 50%;
-    background: linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.2),
-      transparent
-    );
+    height: 45%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.28), transparent);
     pointer-events: none;
   }
 
   .tahoe-button:hover {
-    background: 
-      linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.12) 0%,
-        rgba(255,255,255,0.18) 100%
-      );
-    backdrop-filter: blur(52px) saturate(220%) brightness(140%);
-    -webkit-backdrop-filter: blur(52px) saturate(220%) brightness(140%);
-    box-shadow: 
-      inset 0 1px 0px rgba(255,255,255,0.4),
-      0 0 22px rgba(120,180,255,0.45),
-      0 6px 25px rgba(0,0,0,0.5);
-    transform: scale(1.02);
+    background: linear-gradient(to bottom, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.18) 100%);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+    transform: scale(1.01);
   }
 
   .tahoe-button:active {
@@ -264,109 +226,74 @@
   }
 
   .tahoe-button-primary {
-    background: 
-      linear-gradient(
-        to bottom,
-        rgba(120,180,255,0.25) 0%,
-        rgba(79,140,255,0.30) 100%
-      );
-    border: 1px solid rgba(120,180,255,0.5);
-    box-shadow: 
-      inset 0 1px 0px rgba(255,255,255,0.4),
-      0 0 25px rgba(120,180,255,0.4),
-      0 4px 20px rgba(0,0,0,0.4);
+    background: linear-gradient(to bottom, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.18) 100%);
+    border: 1px solid rgba(255,255,255,0.40);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   }
 
   .tahoe-button-primary:hover {
-    background: 
-      linear-gradient(
-        to bottom,
-        rgba(120,180,255,0.35) 0%,
-        rgba(79,140,255,0.40) 100%
-      );
-    box-shadow: 
-      inset 0 1px 0px rgba(255,255,255,0.5),
-      0 0 35px rgba(120,180,255,0.6),
-      0 6px 30px rgba(0,0,0,0.5);
+    background: linear-gradient(to bottom, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.22) 100%);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.12);
   }
 
   /* macOS Sequoia Input */
   .tahoe-input {
-    background: 
-      linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.06) 0%,
-        rgba(255,255,255,0.10) 100%
-      );
-    backdrop-filter: blur(48px) saturate(210%) brightness(130%);
-    -webkit-backdrop-filter: blur(48px) saturate(210%) brightness(130%);
-    border: 1px solid rgba(255,255,255,0.22);
-    border-radius: 20px;
-    padding: 14px 20px;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 22px;
+    padding: 12px 16px;
     font-size: 15px;
-    color: white;
-    transition: all 240ms cubic-bezier(0.25,0.1,0.25,1.0);
-    box-shadow: 
-      inset 0 1px 0px rgba(255,255,255,0.3),
-      0 4px 15px rgba(0,0,0,0.3);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    color: rgba(0,0,0,0.85);
+    transition: all 0.25s ease;
+    box-shadow: none;
   }
 
   .tahoe-input::placeholder {
-    color: rgba(255,255,255,0.5);
-  }
-
-  .tahoe-input:focus {
-    background: 
-      linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.10) 0%,
-        rgba(255,255,255,0.15) 100%
-      );
-    border-color: rgba(120,180,255,0.6);
-    outline: none;
-    box-shadow: 
-      inset 0 1px 0px rgba(255,255,255,0.4),
-      0 0 0 4px rgba(120,180,255,0.2),
-      0 0 20px rgba(120,180,255,0.3);
+    color: rgba(0,0,0,0.55);
   }
 
   /* Apple Typography with Text Glow */
   .tahoe-title {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-    font-weight: 700;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 500;
     font-size: 32px;
     line-height: 1.2;
-    letter-spacing: -0.5px;
-    text-shadow: 0 0 20px rgba(255,255,255,0.08);
-    color: white;
+    letter-spacing: -0.2px;
+    color: rgba(0,0,0,0.9);
   }
 
   .tahoe-title-lg {
     font-size: 42px;
-    font-weight: 800;
-    letter-spacing: -0.8px;
-    text-shadow: 0 0 25px rgba(255,255,255,0.1);
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    color: rgba(0,0,0,0.9);
   }
 
   .tahoe-text {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
     font-weight: 500;
     font-size: 15px;
     line-height: 1.5;
     letter-spacing: -0.2px;
-    text-shadow: 0 0 15px rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.9);
+    color: rgba(0,0,0,0.85);
   }
 
   .tahoe-text-lg {
     font-size: 17px;
     font-weight: 500;
+    letter-spacing: -0.2px;
+    color: rgba(0,0,0,0.85);
   }
 
   /* Icon Neon Tint */
   .tahoe-icon {
-    filter: drop-shadow(0 0 8px rgba(120,180,255,0.3));
-    transition: all 240ms cubic-bezier(0.25,0.1,0.25,1.0);
+    filter: none;
+    transition: all 0.25s ease;
   }
 
   .tahoe-icon:hover {
@@ -467,4 +394,14 @@
   .tahoe-hover-scale:hover {
     transform: scale(1.018);
   }
+
+  /* Force-visible, zero-transition utility to prevent flashing during route changes */
+  .no-flash,
+  .no-flash * {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: none !important;
+  }
 }
+
+/* End of file */

@@ -257,7 +257,7 @@ function UserBehavior() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px] animate-fade-in">
+      <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center tahoe-glass px-12 py-16">
           <div className="animate-spin rounded-full h-14 w-14 border-2 border-white/20 border-t-blue-400 mx-auto mb-6 tahoe-icon"></div>
           <p className="tahoe-text">Analyzing real user behavior via security APIs...</p>
@@ -267,7 +267,7 @@ function UserBehavior() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8">
       {/* Real Behavior Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {behaviorMetrics.map((metric, index) => (
