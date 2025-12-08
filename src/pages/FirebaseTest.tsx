@@ -43,14 +43,14 @@ const FirebaseTestPage: React.FC = () => {
       addResult('Checking Firebase emulator connection...');
       if (auth.emulatorConfig) {
         addResult('⚠️ Firebase emulators are connected - this may cause OTP issues', true);
-        addResult('Emulator URL: ' + auth.emulatorConfig.url);
+        addResult('Emulator URL: ' + (auth as any).emulatorConfig?.url);
       } else {
         addResult('✅ No emulators connected - using production Firebase');
       }
 
       // Test 4: Check reCAPTCHA availability
       addResult('Testing reCAPTCHA availability...');
-      if (typeof window !== 'undefined' && window.grecaptcha) {
+      if (typeof window !== 'undefined' && (window as any).grecaptcha) {
         addResult('reCAPTCHA is available');
       } else {
         addResult('reCAPTCHA not loaded - this will cause OTP issues', true);

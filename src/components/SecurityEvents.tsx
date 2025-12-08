@@ -8,7 +8,10 @@ import { AlertTriangle, Clock, MapPin, User, Search, Filter, Download } from "lu
 import { useState, useEffect } from "react";
 import { userDataService } from "@/services/userDataService";
 
-const SecurityEvents = () => {
+interface Props {
+  refreshKey?: string;
+}
+const SecurityEvents = ({ refreshKey }: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState("all");
   const [securityEvents, setSecurityEvents] = useState<any[]>([]);
@@ -263,7 +266,7 @@ const SecurityEvents = () => {
     };
     
     fetchRealSecurityEvents();
-  }, []);
+  }, [refreshKey]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {

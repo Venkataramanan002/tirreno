@@ -9,7 +9,10 @@ import { User, Search, Filter, Shield, AlertTriangle, MapPin, Clock, UserX } fro
 import { useState, useEffect } from "react";
 import { userDataService } from "@/services/userDataService";
 
-const UserManagement = () => {
+interface Props {
+  refreshKey?: string;
+}
+const UserManagement = ({ refreshKey }: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
   const [users, setUsers] = useState<any[]>([]);
@@ -239,7 +242,7 @@ const UserManagement = () => {
     };
     
     fetchRealUserData();
-  }, []);
+  }, [refreshKey]);
 
   const getRiskScoreColor = (score: number) => {
     if (score >= 70) return "text-red-400";

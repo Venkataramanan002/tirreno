@@ -7,7 +7,10 @@ import { Shield, Bot, AlertTriangle, Ban, CheckCheck, AlertCircle, Zap, Eye, Cpu
 import { useState, useEffect } from "react";
 import { dataAggregationService, UnifiedEnrichmentData } from "@/services/dataAggregationService";
 
-const ThreatDetection = () => {
+interface Props {
+  refreshKey?: string;
+}
+const ThreatDetection = ({ refreshKey }: Props) => {
   const [enrichmentData, setEnrichmentData] = useState<UnifiedEnrichmentData | null>(null);
   const [threatTypes, setThreatTypes] = useState<any[]>([]);
   const [hourlyData, setHourlyData] = useState<any[]>([]);
@@ -53,7 +56,7 @@ const ThreatDetection = () => {
         }
         
         // Get unified enrichment data
-        const enrichment = await dataAggregationService.getUnifiedEnrichmentData();
+        const enrichment = await dataAggregationService.getUnifiedEnrichmentData(!!refreshKey);
         setEnrichmentData(enrichment);
         
         console.log('ThreatDetection: Using unified enrichment data:', enrichment);
@@ -267,18 +270,7 @@ const ThreatDetection = () => {
     };
 
     fetchUnifiedThreatData();
-    // Only refresh if cache is expired (5 minutes)
-    const interval = setInterval(() => {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const { cachedAt } = JSON.parse(cached);
-        if (Date.now() - (cachedAt || 0) >= 5 * 60 * 1000) {
-          fetchUnifiedThreatData();
-        }
-      }
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [refreshKey]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {

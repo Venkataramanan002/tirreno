@@ -5,9 +5,13 @@ import { AlertTriangle, Shield, Bot, User, Clock, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
 import { userDataService, UserProfile, SecurityEvent, ThreatIntelligence, BotDetection } from "@/services/userDataService";
 
+interface Props {
+  refreshKey?: string;
+}
+
 // Interfaces are now imported from userDataService
 
-const SecurityScenarioAnalysis = () => {
+const SecurityScenarioAnalysis = ({ refreshKey }: Props) => {
   const [userSession, setUserSession] = useState<UserProfile | null>(null);
   const [securityEvents, setSecurityEvents] = useState<SecurityEvent[]>([]);
   const [threatIntelligence, setThreatIntelligence] = useState<ThreatIntelligence[]>([]);
@@ -39,7 +43,7 @@ const SecurityScenarioAnalysis = () => {
     };
 
     initializeData();
-  }, []);
+  }, [refreshKey]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {

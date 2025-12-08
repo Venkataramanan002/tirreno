@@ -11,9 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface DataValidationReportProps {
   initialReport?: DataValidationReport;
+  refreshKey?: string;
 }
 
-export default function DataValidationReportComponent({ initialReport }: DataValidationReportProps) {
+export default function DataValidationReportComponent({ initialReport, refreshKey }: DataValidationReportProps) {
   const [report, setReport] = useState<DataValidationReport | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [jsonData, setJsonData] = useState<string | null>(null);
@@ -52,7 +53,7 @@ export default function DataValidationReportComponent({ initialReport }: DataVal
         URL.revokeObjectURL(pdfUrl);
       }
     };
-  }, [initialReport]);
+  }, [initialReport, refreshKey]);
 
   const generatePlainTextSummary = (data: DataValidationReport): string => {
     return `

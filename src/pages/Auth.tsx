@@ -21,9 +21,8 @@ const Auth = () => {
     setError(null);
     setOauthLoading(true);
     try {
-      const redirectTo = window.location.origin.includes('localhost')
-        ? 'http://localhost:8080'
-        : 'https://bpylpdcnhbtnhkspcqyy.supabase.co/auth/v1/callback';
+      // Always redirect back to our app's OAuth callback route
+      const redirectTo = `${window.location.origin}/oauth/callback`;
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {

@@ -36,7 +36,7 @@ if (import.meta.env.DEV && false) { // Disabled for phone auth
     if (!auth.emulatorConfig) {
       connectAuthEmulator(auth, "http://localhost:9099");
     }
-    if (!db._delegate._settings?.host?.includes('localhost')) {
+    if (!(db as any)._delegate._settings?.host?.includes('localhost')) {
       connectFirestoreEmulator(db, 'localhost', 8080);
     }
   } catch (error) {

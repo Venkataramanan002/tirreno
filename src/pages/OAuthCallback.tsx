@@ -67,13 +67,15 @@ const OAuthCallback = () => {
 
         const user = sessionData.session?.user;
         if (user) {
+          const googleSub = user.identities?.[0]?.identity_data?.sub as string | undefined;
+          const providerSub = (profileEmail && profileEmail !== 'unable to fetch data') ? profileEmail : (googleSub || user.id);
           await supabase.from('oauth_users').upsert({
             user_id: user.id,
             email: profileEmail !== 'unable to fetch data' ? profileEmail : null,
             name: profileName !== 'unable to fetch data' ? profileName : null,
             picture: profilePicture || null,
             provider: 'google',
-            provider_sub: user.identities?.[0]?.identity_data?.sub || user.id
+            provider_sub: providerSub
           }, { onConflict: 'provider,provider_sub' });
         }
 

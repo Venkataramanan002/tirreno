@@ -7,7 +7,8 @@ import SecurityEvents from "@/components/SecurityEvents";
 import UserManagement from "@/components/UserManagement";
 import SecurityScenarioAnalysis from "@/components/SecurityScenarioAnalysis";
 import DataValidationReportComponent from "@/components/DataValidationReport";
-import { Shield, LogOut, User } from "lucide-react";
+import { Shield, LogOut, User, RefreshCw } from "lucide-react";
+import AccountSwitcher from "@/components/AccountSwitcher";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +24,7 @@ const Index = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [dataValidationReport, setDataValidationReport] = useState<any>(null);
+  const [refreshKey, setRefreshKey] = useState<string>("");
 
   useEffect(() => {
     // Set up auth state listener
@@ -41,6 +43,29 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const ensureProfile = async () => {
+      if (!user) return;
+      const emailCandidate = user.email || (() => {
+        try {
+          const raw = localStorage.getItem('oauth_profile');
+          if (raw) return JSON.parse(raw).email as string | undefined;
+        } catch {}
+        return undefined;
+      })() || undefined;
+      if (!emailCandidate) return;
+      try {
+        await supabase.from('profiles').upsert({
+          user_id: user.id,
+          email: emailCandidate,
+        }, { onConflict: 'user_id' });
+      } catch (e) {
+        console.warn('Failed to upsert profile', e);
+      }
+    };
+    ensureProfile();
+  }, [user]);
 
   // Generate data validation report when user is available
   useEffect(() => {
@@ -63,6 +88,10 @@ const Index = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/auth");
+  };
+
+  const handleRefresh = () => {
+    setRefreshKey(String(Date.now()));
   };
 
   useEffect(() => {
@@ -106,6 +135,15 @@ const Index = () => {
                 <User className="w-4 h-4 text-blue-400 tahoe-icon" />
                 <span className="tahoe-text font-mono">{user.email}</span>
               </div>
+              <Button
+                onClick={handleRefresh}
+                variant="outline"
+                size="sm"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh
+              </Button>
+              <AccountSwitcher />
               <Button 
                 onClick={handleLogout}
                 variant="outline"
@@ -147,31 +185,31 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="scenario">
-            <SecurityScenarioAnalysis />
+            <SecurityScenarioAnalysis refreshKey={refreshKey} />
           </TabsContent>
 
           <TabsContent value="dashboard">
-            <Dashboard />
+            <Dashboard refreshKey={refreshKey} />
           </TabsContent>
 
           <TabsContent value="behavior">
-            <UserBehavior />
+            <UserBehavior refreshKey={refreshKey} />
           </TabsContent>
 
           <TabsContent value="threats">
-            <ThreatDetection />
+            <ThreatDetection refreshKey={refreshKey} />
           </TabsContent>
 
           <TabsContent value="events">
-            <SecurityEvents />
+            <SecurityEvents refreshKey={refreshKey} />
           </TabsContent>
 
           <TabsContent value="users">
-            <UserManagement />
+            <UserManagement refreshKey={refreshKey} />
           </TabsContent>
 
           <TabsContent value="report">
-            <DataValidationReportComponent initialReport={dataValidationReport} />
+            <DataValidationReportComponent initialReport={dataValidationReport} refreshKey={refreshKey} />
           </TabsContent>
         </Tabs>
       </main>

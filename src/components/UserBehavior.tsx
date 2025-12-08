@@ -7,7 +7,10 @@ import { User, Search, Clock, MousePointer, Navigation } from "lucide-react";
 import { useState, useEffect } from "react";
 import { userDataService } from "@/services/userDataService";
 
-function UserBehavior() {
+interface Props {
+  refreshKey?: string;
+}
+function UserBehavior({ refreshKey }: Props) {
   const [searchUser, setSearchUser] = useState("");
   const [sessionData, setSessionData] = useState<any[]>([]);
   const [behaviorMetrics, setBehaviorMetrics] = useState<any[]>([]);
@@ -225,18 +228,7 @@ function UserBehavior() {
     };
 
     fetchRealUserData();
-    // Only refresh if cache is expired (5 minutes)
-    const interval = setInterval(() => {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const { cachedAt } = JSON.parse(cached);
-        if (Date.now() - (cachedAt || 0) >= 5 * 60 * 1000) {
-          fetchRealUserData();
-        }
-      }
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [refreshKey]);
 
   const getRiskColor = (score: number) => {
     if (score >= 70) return "text-red-400";

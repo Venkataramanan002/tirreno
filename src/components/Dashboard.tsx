@@ -6,7 +6,11 @@ import { Shield, Users, Bot, AlertTriangle, TrendingUp, Activity } from "lucide-
 import { useState, useEffect } from "react";
 import { userDataService } from "@/services/userDataService";
 
-const Dashboard = () => {
+interface Props {
+  refreshKey?: string;
+}
+
+const Dashboard = ({ refreshKey }: Props) => {
   const [metrics, setMetrics] = useState<any>(null);
   const [threatTimeline, setThreatTimeline] = useState<any[]>([]);
   const [riskDistribution, setRiskDistribution] = useState<any[]>([]);
@@ -197,18 +201,7 @@ const Dashboard = () => {
     };
 
     fetchRealData();
-    // Only refresh if cache is expired (5 minutes)
-    const interval = setInterval(() => {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const { cachedAt } = JSON.parse(cached);
-        if (Date.now() - (cachedAt || 0) >= 5 * 60 * 1000) {
-          fetchRealData();
-        }
-      }
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [refreshKey]);
 
   if (isLoading) {
     return (
