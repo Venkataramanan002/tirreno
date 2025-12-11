@@ -6,9 +6,9 @@ import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 // Firebase configuration
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCsv0OIZJSoodJSGZFkK3eTlW6x8gJZTcM",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "tirreno-a3a00.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "tirreno-a3a00",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "tirreno-a3a00.firebasestorage.app",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "email-threat-analysis.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "email-threat-analysis",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "email-threat-analysis.firebasestorage.app",
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "859748199655",
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:859748199655:web:7d9078c874c8c0d8d18642",
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-Y5ZZDHE8MS"
