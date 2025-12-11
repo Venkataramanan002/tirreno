@@ -1,7 +1,7 @@
-<img width="1677" height="960" alt="Screenshot 2025-12-06 at 4 02 16 PM" src="https://github.com/user-attachments/assets/5d03e29b-0b36-4948-a398-d415e5fadb59" /># Email Threat Analysis – Project Overview
+<img width="1577" height="860" alt="Screenshot 2025-12-06 at 4 02 16 PM" src="https://github.com/user-attachments/assets/5d03e29b-0b36-4948-a398-d415e5fadb59" /># Email Threat Analysis – Project Overview
+
 
 A client-side web app for multi-account Gmail security insights. It authenticates with Google OAuth, caches data locally, and visualizes threat, behavior, and settings insights across tabs.
-<img width="1677" height="960" alt="Screenshot 2025-12-06 at 4 02 16 PM" src="https://github.com/user-attachments/assets/58da26b5-bd3c-4aaf-a25c-b21e65d10d63" />
 
 ## Goals
 - Help users inspect Gmail-related security signals (spam/suspicious domains, forwarding, delegated accounts).
