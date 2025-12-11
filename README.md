@@ -21,6 +21,8 @@ A client-side web app for multi-account Gmail security insights. It authenticate
 4. **Refresh**: Refresh button reloads data for the active account.
 5. **Page reload**: `initializeFromOAuthProfile()` rebuilds state from localStorage to stay consistent after refresh.
 
+<img width="393" height="192" alt="Screenshot 2025-12-08 at 6 57 17 PM" src="https://github.com/user-attachments/assets/dffba8c2-3337-4485-85f7-67d0235b47c6" />
+
 ## LocalStorage Keys
 - `accounts`: `[{ name, email, profileImgUrl }]`
 - `activeAccount`: `{ name, email, profileImgUrl }`
