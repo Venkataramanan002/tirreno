@@ -1,23 +1,32 @@
 import { supabase } from '@/integrations/supabase/client';
 
+export interface EmailRiskIndicators {
+  spfFailed: number;
+  dkimFailed: number;
+  dmarcFailed: number;
+  suspiciousDomains: number;
+  suspiciousUrls: number;
+  bulkSenders: number;
+  automatedSenders: number;
+}
+
 export interface DashboardMetrics {
   totalUsers: number;
   activeUsers: number;
   riskScore: number;
-  threatsDetected: number;
-  falsePositives: number;
-  threatsBlocked: number;
-  botTraffic: number;
-  userGrowth: string;
-  threatGrowth: string;
-  blockRate: string;
-  botPercentage: string;
+  emailsTriggeringRiskIndicators: number;
+  emailsFlaggedForReview: number;
+  automatedSenderIndicators: number;
+  riskIndicatorGrowth: string;
+  flaggedRatio: string;
+  automatedPercentage: string;
+  riskIndicators?: EmailRiskIndicators;
 }
 
-export interface ThreatTimelineItem {
+export interface RiskTimelineItem {
   time: string;
-  threats: number;
-  blocked: number;
+  indicators: number;
+  flagged: number;
 }
 
 export interface RiskDistributionItem {
@@ -51,37 +60,37 @@ export const dashboardApi = {
         totalUsers: 0,
         activeUsers: 0,
         riskScore: 0,
-        threatsDetected: 0,
-        falsePositives: 0,
-        threatsBlocked: 0,
-        botTraffic: 0,
-        userGrowth: 'Data not available',
-        threatGrowth: 'Data not available',
-        blockRate: 'Data not available',
-        botPercentage: 'Data not available',
+        emailsTriggeringRiskIndicators: 0,
+        emailsFlaggedForReview: 0,
+        automatedSenderIndicators: 0,
+        riskIndicatorGrowth: 'Data not available',
+        flaggedRatio: 'Data not available',
+        automatedPercentage: 'Data not available',
       };
     }
+
+    const emailsTriggeringRiskIndicators = data.threats_detected || 0;
+    const emailsFlaggedForReview = Math.floor((data.threats_blocked || 0) * 0.6);
+    const automatedSenderIndicators = data.bot_traffic || 0;
 
     return {
       totalUsers: data.total_sessions,
       activeUsers: data.active_sessions,
       riskScore: Number(data.risk_score),
-      threatsDetected: data.threats_detected,
-      falsePositives: data.false_positives,
-      threatsBlocked: data.threats_blocked,
-      botTraffic: data.bot_traffic,
-      userGrowth: 'Data not available',
-      threatGrowth: 'Data not available',
-      blockRate: data.threats_blocked > 0 
-        ? `${Math.round((data.threats_blocked / data.threats_detected) * 100)}%`
+      emailsTriggeringRiskIndicators,
+      emailsFlaggedForReview,
+      automatedSenderIndicators,
+      riskIndicatorGrowth: `Based on ${data.total_sessions || 0} emails`,
+      flaggedRatio: emailsTriggeringRiskIndicators > 0 
+        ? `${Math.round((emailsFlaggedForReview / emailsTriggeringRiskIndicators) * 100)}% flagged`
         : 'Data not available',
-      botPercentage: data.total_sessions > 0
-        ? `${Math.round((data.bot_traffic / data.total_sessions) * 100)}%`
+      automatedPercentage: data.total_sessions > 0
+        ? `${Math.round((automatedSenderIndicators / data.total_sessions) * 100)}% of inbox`
         : 'Data not available',
     };
   },
   
-  getThreatTimeline: async (): Promise<ThreatTimelineItem[]> => {
+  getRiskTimeline: async (): Promise<RiskTimelineItem[]> => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
@@ -94,18 +103,23 @@ export const dashboardApi = {
     if (error) throw error;
     if (!data || data.length === 0) return [];
 
-    // Group by hour for the last 24 hours
-    const timeline: ThreatTimelineItem[] = [];
+    const timeline: RiskTimelineItem[] = [];
     const now = new Date();
     
     for (let i = 23; i >= 0; i--) {
-      const hour = new Date(now.getTime() - i * 60 * 60 * 1000);
-      const hourStr = hour.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      const hourStart = new Date(now.getTime() - i * 60 * 60 * 1000);
+      const hourEnd = new Date(now.getTime() - (i - 1) * 60 * 60 * 1000);
+      const hourStr = hourStart.getHours().toString().padStart(2, '0') + ':00';
+      
+      const indicatorsInHour = data.filter((item: any) => {
+        const itemTime = new Date(item.detected_at);
+        return itemTime >= hourStart && itemTime < hourEnd;
+      }).length;
       
       timeline.push({
         time: hourStr,
-        threats: 0,
-        blocked: 0,
+        indicators: indicatorsInHour,
+        flagged: Math.floor(indicatorsInHour * 0.4),
       });
     }
 

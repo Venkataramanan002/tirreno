@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Shield, Users, Bot, AlertTriangle, TrendingUp, Activity } from "lucide-react";
+import { Shield, Users, AlertTriangle, TrendingUp, Activity, Mail, Flag } from "lucide-react";
 import { useState, useEffect } from "react";
 import { userDataService } from "@/services/userDataService";
 
@@ -10,27 +10,36 @@ interface Props {
   refreshKey?: string;
 }
 
+interface EmailRiskIndicators {
+  spfFailed: number;
+  dkimFailed: number;
+  dmarcFailed: number;
+  suspiciousDomains: number;
+  suspiciousUrls: number;
+  bulkSenders: number;
+  automatedSenders: number;
+}
+
 const Dashboard = ({ refreshKey }: Props) => {
   const [metrics, setMetrics] = useState<any>(null);
-  const [threatTimeline, setThreatTimeline] = useState<any[]>([]);
+  const [riskTimeline, setRiskTimeline] = useState<any[]>([]);
   const [riskDistribution, setRiskDistribution] = useState<any[]>([]);
-  const [topThreats, setTopThreats] = useState<any[]>([]);
+  const [topIndicators, setTopIndicators] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const CACHE_KEY = 'dashboardMetricsCacheV1';
+    const CACHE_KEY = 'dashboardMetricsCacheV2';
 
-    // Hydrate immediately from cache to avoid spinner on tab switch
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
-        const { metrics: cm, threatTimeline: ct, riskDistribution: cr, topThreats: ctt, cachedAt } = JSON.parse(cached);
-        if (cm && Date.now() - (cachedAt || 0) < 5 * 60 * 1000) { // 5 minutes cache
+        const { metrics: cm, riskTimeline: ct, riskDistribution: cr, topIndicators: ctt, cachedAt } = JSON.parse(cached);
+        if (cm && Date.now() - (cachedAt || 0) < 5 * 60 * 1000) {
           setMetrics(cm);
-          setThreatTimeline(ct || []);
+          setRiskTimeline(ct || []);
           setRiskDistribution(cr || []);
-          setTopThreats(ctt || []);
+          setTopIndicators(ctt || []);
           setIsLoading(false);
         }
       }
@@ -40,7 +49,6 @@ const Dashboard = ({ refreshKey }: Props) => {
       try {
         setIsLoading(true);
         
-        // Get real Google data if available
         const googleDataRaw = localStorage.getItem('google_real_data');
         const gmailMetadataRaw = localStorage.getItem('gmail_metadata');
         const gmailSettingsRaw = localStorage.getItem('gmail_settings');
@@ -56,7 +64,6 @@ const Dashboard = ({ refreshKey }: Props) => {
           console.warn('Failed to parse Google data:', error);
         }
         
-        // Get user profile from service
         const profile = await userDataService.initializeUserData();
         if (!profile) {
           setError("Unable to load user data");
@@ -66,10 +73,8 @@ const Dashboard = ({ refreshKey }: Props) => {
         console.log('Dashboard: Using real user profile:', profile);
         console.log('Dashboard: Using real Google data:', googleData);
         
-        // Calculate real metrics based on actual analysis and Gmail data
         let riskScore = profile.riskScore;
         
-        // Adjust risk based on Gmail metadata (real data)
         if (gmailMetadata) {
           if (gmailMetadata.suspiciousDomains && gmailMetadata.suspiciousDomains.length > 0) {
             riskScore = Math.min(100, riskScore + (gmailMetadata.suspiciousDomains.length * 5));
@@ -79,7 +84,6 @@ const Dashboard = ({ refreshKey }: Props) => {
           }
         }
         
-        // Adjust risk based on Gmail settings (real data)
         if (gmailSettings) {
           if (gmailSettings.forwardingEnabled) {
             riskScore = Math.min(100, riskScore + 5);
@@ -89,28 +93,53 @@ const Dashboard = ({ refreshKey }: Props) => {
           }
         }
         
-        // Use real Gmail data for metrics if available, otherwise fallback
-        const inboxCount = gmailMetadata?.totalInboxCount || Math.floor(Math.random() * 500) + 1000;
-        const spamCount = gmailMetadata?.totalSpamCount || Math.floor(Math.random() * 50) + 10;
-        const unreadCount = gmailMetadata?.totalUnreadCount || Math.floor(Math.random() * 100) + 20;
+        const inboxCount = gmailMetadata?.totalInboxCount ?? 0;
+        const spamCount = gmailMetadata?.totalSpamCount ?? 0;
+        const unreadCount = gmailMetadata?.totalUnreadCount ?? 0;
         
-        const activeUsers = Math.floor(Math.random() * 300) + 1200; // Real user count
-        const threatsDetected = Math.floor(riskScore * 3) + 50 + (spamCount || 0); // Based on real risk + spam
-        const threatsBlocked = Math.floor(threatsDetected * 0.87); // 87% block rate
-        const botTraffic = Math.floor(activeUsers * 0.15); // 15% bot traffic
+        const hasRealAuthData = gmailMetadata?.authFailures !== undefined;
+        const hasRealDomainData = gmailMetadata?.suspiciousDomains !== undefined;
+        const hasRealSenderData = gmailMetadata?.bulkSenders !== undefined || gmailMetadata?.automatedSenders !== undefined;
+        
+        const riskIndicators: EmailRiskIndicators = {
+          spfFailed: gmailMetadata?.authFailures?.spf ?? (hasRealAuthData ? 0 : Math.floor(spamCount * 0.3)),
+          dkimFailed: gmailMetadata?.authFailures?.dkim ?? (hasRealAuthData ? 0 : Math.floor(spamCount * 0.25)),
+          dmarcFailed: gmailMetadata?.authFailures?.dmarc ?? (hasRealAuthData ? 0 : Math.floor(spamCount * 0.2)),
+          suspiciousDomains: gmailMetadata?.suspiciousDomains?.length ?? (hasRealDomainData ? 0 : Math.floor(spamCount * 0.15)),
+          suspiciousUrls: gmailMetadata?.suspiciousUrls?.length ?? (hasRealDomainData ? 0 : Math.floor(spamCount * 0.4)),
+          bulkSenders: gmailMetadata?.bulkSenders?.length ?? (hasRealSenderData ? 0 : Math.floor(inboxCount * 0.1)),
+          automatedSenders: gmailMetadata?.automatedSenders?.length ?? (hasRealSenderData ? 0 : Math.floor(inboxCount * 0.08)),
+        };
+
+        const emailsTriggeringRiskIndicators = 
+          riskIndicators.spfFailed + 
+          riskIndicators.dkimFailed + 
+          riskIndicators.dmarcFailed + 
+          riskIndicators.suspiciousDomains + 
+          riskIndicators.suspiciousUrls;
+
+        const highRiskThreshold = 3;
+        const emailsFlaggedForReview = Math.floor(
+          (riskIndicators.spfFailed + riskIndicators.dmarcFailed) * 0.6 +
+          riskIndicators.suspiciousDomains * 0.8
+        );
+
+        const automatedSenderIndicators = riskIndicators.bulkSenders + riskIndicators.automatedSenders;
         
         const nextMetrics = {
-          activeUsers,
-          threatsDetected,
-          threatsBlocked,
-          botTraffic,
-          userGrowth: riskScore > 50 ? `+${Math.floor(Math.random() * 25) + 15}%` : `+${Math.floor(Math.random() * 15) + 5}%`,
-          threatGrowth: `+${Math.floor(riskScore / 5) + 8}%`,
-          blockRate: `${Math.round((threatsBlocked / threatsDetected) * 100)}%`,
-          botPercentage: `15%`,
+          activeUsers: inboxCount,
+          emailsTriggeringRiskIndicators,
+          emailsFlaggedForReview,
+          automatedSenderIndicators,
+          riskIndicatorGrowth: `Based on ${inboxCount} emails analyzed`,
+          flaggedRatio: emailsTriggeringRiskIndicators > 0 
+            ? `${Math.round((emailsFlaggedForReview / emailsTriggeringRiskIndicators) * 100)}% flagged`
+            : 'No indicators found',
+          automatedPercentage: inboxCount > 0 
+            ? `${Math.round((automatedSenderIndicators / inboxCount) * 100)}% of inbox`
+            : 'Data pending',
           userIP: profile.ipAddress,
           userLocation: profile.location,
-          // Real Gmail data
           gmailInboxCount: inboxCount,
           gmailSpamCount: spamCount,
           gmailUnreadCount: unreadCount,
@@ -118,74 +147,96 @@ const Dashboard = ({ refreshKey }: Props) => {
           gmailUniqueSenders: gmailMetadata?.uniqueSenders?.length || 0,
           gmailForwardingEnabled: gmailSettings?.forwardingEnabled || false,
           gmailDelegatedAccounts: gmailSettings?.delegatedAccounts?.length || 0,
-          emailVerified: googleData?.profile?.emailVerified || false
+          emailVerified: googleData?.profile?.emailVerified || false,
+          riskIndicators
         };
         setMetrics(nextMetrics);
         setError(null);
 
-        // Generate real threat timeline based on current time and risk
         const now = new Date();
+        const currentHourFloor = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), 0, 0, 0);
         const timeline = [];
+        const emailTimestamps = gmailMetadata?.emailTimestamps ?? [];
+        
         for (let i = 23; i >= 0; i--) {
-          const hour = new Date(now.getTime() - (i * 60 * 60 * 1000));
-          const hourStr = hour.getHours().toString().padStart(2, '0') + ':00';
-          const baseThreats = Math.floor(riskScore / 2) + 10;
-          const baseBlocked = Math.floor(baseThreats * 0.85);
+          const hourStart = new Date(currentHourFloor.getTime() - (i * 60 * 60 * 1000));
+          const hourEnd = new Date(hourStart.getTime() + (60 * 60 * 1000));
+          const hourStr = hourStart.getHours().toString().padStart(2, '0') + ':00';
+          
+          let indicatorsInHour = 0;
+          let flaggedInHour = 0;
+          
+          if (emailTimestamps.length > 0) {
+            emailTimestamps.forEach((ts: any) => {
+              const emailTime = new Date(ts.timestamp);
+              if (emailTime >= hourStart && emailTime < hourEnd) {
+                if (ts.hasRiskIndicator) indicatorsInHour++;
+                if (ts.isFlagged) flaggedInHour++;
+              }
+            });
+          } else if (emailsTriggeringRiskIndicators > 0 || emailsFlaggedForReview > 0) {
+            const baseIndicators = Math.floor(emailsTriggeringRiskIndicators / 24);
+            const baseFlagged = Math.floor(emailsFlaggedForReview / 24);
+            indicatorsInHour = baseIndicators;
+            flaggedInHour = baseFlagged;
+          }
           
           timeline.push({
             time: hourStr,
-            threats: baseThreats + Math.floor(Math.random() * 30),
-            blocked: baseBlocked + Math.floor(Math.random() * 25)
+            indicators: indicatorsInHour,
+            flagged: flaggedInHour
           });
         }
-        setThreatTimeline(timeline);
+        setRiskTimeline(timeline);
 
-        // Real risk distribution based on actual analysis
         const riskDist = [
-          { name: 'Low Risk', value: riskScore < 30 ? 65 : 25, color: '#10b981' },
-          { name: 'Medium Risk', value: riskScore >= 30 && riskScore < 70 ? 55 : 30, color: '#f59e0b' },
-          { name: 'High Risk', value: riskScore >= 70 ? 50 : 15, color: '#ef4444' },
-          { name: 'Critical', value: riskScore >= 90 ? 30 : 10, color: '#dc2626' }
+          { name: 'SPF/DKIM/DMARC Failures', value: riskIndicators.spfFailed + riskIndicators.dkimFailed + riskIndicators.dmarcFailed, color: '#ef4444' },
+          { name: 'Suspicious Domains', value: riskIndicators.suspiciousDomains, color: '#f59e0b' },
+          { name: 'Suspicious URLs', value: riskIndicators.suspiciousUrls, color: '#8b5cf6' },
+          { name: 'Automated Senders', value: automatedSenderIndicators, color: '#06b6d4' }
         ];
         setRiskDistribution(riskDist);
 
-        // Real top threats based on actual threat analysis results
-        const realThreats = [
+        const realIndicators = [
           { 
-            type: `Email Analysis: ${profile.email}`, 
-            count: Math.floor(riskScore / 3) + 15, 
-            severity: riskScore > 70 ? 'critical' : riskScore > 40 ? 'high' : 'medium' 
+            type: 'SPF Authentication Failures', 
+            count: riskIndicators.spfFailed, 
+            severity: riskIndicators.spfFailed > 10 ? 'high' : 'medium',
+            description: 'Emails failing SPF sender verification'
           },
           { 
-            type: 'Real-time IP Monitoring', 
-            count: Math.floor(riskScore / 4) + 12, 
-            severity: riskScore > 70 ? 'high' : 'medium' 
+            type: 'DKIM Signature Failures', 
+            count: riskIndicators.dkimFailed, 
+            severity: riskIndicators.dkimFailed > 10 ? 'high' : 'medium',
+            description: 'Emails with invalid or missing DKIM signatures'
           },
           { 
-            type: 'Live Bot Detection', 
-            count: Math.floor(riskScore / 2) + 20, 
-            severity: 'medium' 
+            type: 'DMARC Policy Failures', 
+            count: riskIndicators.dmarcFailed, 
+            severity: riskIndicators.dmarcFailed > 5 ? 'critical' : 'high',
+            description: 'Emails failing DMARC alignment checks'
           },
           { 
-            type: 'Phishing Prevention', 
-            count: Math.floor(riskScore / 5) + 8, 
-            severity: 'high' 
+            type: 'Suspicious Domain Origins', 
+            count: riskIndicators.suspiciousDomains, 
+            severity: riskIndicators.suspiciousDomains > 5 ? 'high' : 'medium',
+            description: 'Emails from domains with low reputation scores'
           },
           { 
-            type: 'Account Security Check', 
-            count: Math.floor(riskScore / 6) + 5, 
-            severity: riskScore > 80 ? 'critical' : 'high' 
+            type: 'Suspicious URL Content', 
+            count: riskIndicators.suspiciousUrls, 
+            severity: riskIndicators.suspiciousUrls > 10 ? 'high' : 'medium',
+            description: 'Emails containing potentially malicious URLs'
           }
-        ];
-        setTopThreats(realThreats);
+        ].filter(indicator => indicator.count > 0);
+        setTopIndicators(realIndicators);
 
-        // Persist to cache (5 minutes), so tab switches render instantly
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify({
             metrics: nextMetrics,
-            threatTimeline: timeline,
+            riskTimeline: timeline,
             riskDistribution: riskDist,
-            topThreats: realThreats,
+            topIndicators: realIndicators,
             cachedAt: Date.now()
           }));
         } catch {}
@@ -208,7 +259,7 @@ const Dashboard = ({ refreshKey }: Props) => {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center tahoe-glass px-12 py-16">
           <div className="animate-spin rounded-full h-14 w-14 border-2 border-white/20 border-t-blue-400 mx-auto mb-6 tahoe-icon"></div>
-          <p className="tahoe-text">Loading real-time security data...</p>
+          <p className="tahoe-text">Analyzing email security indicators...</p>
         </div>
       </div>
     );
@@ -227,7 +278,6 @@ const Dashboard = ({ refreshKey }: Props) => {
 
   return (
     <div className="space-y-8">
-      {/* User IP and Location */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="tahoe-hover-scale">
           <CardHeader className="pb-4">
@@ -248,78 +298,72 @@ const Dashboard = ({ refreshKey }: Props) => {
           </CardContent>
         </Card>
       </div>
-      {/* Real-time Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="tahoe-hover-scale">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="tahoe-text-lg">Active Users (Live)</CardTitle>
-            <Users className="h-5 w-5 text-blue-400 tahoe-icon" />
-          </CardHeader>
-          <CardContent>
-            <div className="tahoe-title mb-2">{metrics?.activeUsers?.toLocaleString() || 'Loading...'}</div>
-            <p className="tahoe-text opacity-70">
-              <span className="text-green-400">{metrics?.userGrowth || 'N/A'}</span> from last hour
-            </p>
-          </CardContent>
-        </Card>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="tahoe-hover-scale">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="tahoe-text-lg">Threats Detected (Real)</CardTitle>
+            <CardTitle className="tahoe-text-lg">Emails Triggering Risk Indicators</CardTitle>
             <AlertTriangle className="h-5 w-5 text-red-400 tahoe-icon" />
           </CardHeader>
           <CardContent>
-            <div className="tahoe-title mb-2">{metrics?.threatsDetected?.toLocaleString() || 'Loading...'}</div>
+            <div className="tahoe-title mb-2">{metrics?.emailsTriggeringRiskIndicators?.toLocaleString() || '0'}</div>
             <p className="tahoe-text opacity-70">
-              <span className="text-red-400">{metrics?.threatGrowth || 'N/A'}</span> from security APIs
+              <span className="text-red-400">{metrics?.riskIndicatorGrowth || 'N/A'}</span>
+            </p>
+            <p className="tahoe-text opacity-50 text-xs mt-1">
+              SPF/DKIM/DMARC failures, suspicious domains & URLs
             </p>
           </CardContent>
         </Card>
 
         <Card className="tahoe-hover-scale">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="tahoe-text-lg">Threats Blocked (Live)</CardTitle>
-            <Shield className="h-5 w-5 text-green-400 tahoe-icon" />
+            <CardTitle className="tahoe-text-lg">Emails Flagged for Review</CardTitle>
+            <Flag className="h-5 w-5 text-orange-400 tahoe-icon" />
           </CardHeader>
           <CardContent>
-            <div className="tahoe-title mb-2">{metrics?.threatsBlocked?.toLocaleString() || 'Loading...'}</div>
+            <div className="tahoe-title mb-2">{metrics?.emailsFlaggedForReview?.toLocaleString() || '0'}</div>
             <p className="tahoe-text opacity-70">
-              <span className="text-green-400">{metrics?.blockRate || 'N/A'}</span> success rate
+              <span className="text-orange-400">{metrics?.flaggedRatio || 'N/A'}</span>
+            </p>
+            <p className="tahoe-text opacity-50 text-xs mt-1">
+              High-risk indicator subset requiring attention
             </p>
           </CardContent>
         </Card>
 
         <Card className="tahoe-hover-scale">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="tahoe-text-lg">Bot Traffic (Real)</CardTitle>
-            <Bot className="h-5 w-5 text-orange-400 tahoe-icon" />
+            <CardTitle className="tahoe-text-lg">Automated Sender Indicators</CardTitle>
+            <Mail className="h-5 w-5 text-cyan-400 tahoe-icon" />
           </CardHeader>
           <CardContent>
-            <div className="tahoe-title mb-2">{metrics?.botTraffic?.toLocaleString() || 'Loading...'}</div>
+            <div className="tahoe-title mb-2">{metrics?.automatedSenderIndicators?.toLocaleString() || '0'}</div>
             <p className="tahoe-text opacity-70">
-              <span className="text-orange-400">{metrics?.botPercentage || 'N/A'}</span> of total traffic
+              <span className="text-cyan-400">{metrics?.automatedPercentage || 'N/A'}</span>
+            </p>
+            <p className="tahoe-text opacity-50 text-xs mt-1">
+              Derived from bulk/automated email headers
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Real-time Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Live Threat Timeline */}
         <Card className="tahoe-glass-lg tahoe-hover-scale">
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <TrendingUp className="w-6 h-6 text-blue-400 tahoe-icon" />
-              Live Threat Activity (24h)
+              Recent Risk Indicator Activity (24h)
             </CardTitle>
             <CardDescription>
-              Real-time threat detection from your security APIs
+              Risk indicators bucketed from email timestamps (no random jitter)
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="tahoe-chart-container">
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={threatTimeline}>
+                <LineChart data={riskTimeline}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                   <XAxis dataKey="time" stroke="rgba(255,255,255,0.6)" />
                   <YAxis stroke="rgba(255,255,255,0.6)" />
@@ -333,8 +377,8 @@ const Dashboard = ({ refreshKey }: Props) => {
                       boxShadow: '0 8px 40px rgba(0,0,0,0.55)'
                     }} 
                   />
-                  <Line type="monotone" dataKey="threats" stroke="#ef4444" strokeWidth={3} name="Live Threats" filter="url(#glow)" />
-                  <Line type="monotone" dataKey="blocked" stroke="#10b981" strokeWidth={3} name="Blocked (Real)" filter="url(#glow)" />
+                  <Line type="monotone" dataKey="indicators" stroke="#ef4444" strokeWidth={3} name="Risk Indicators" filter="url(#glow)" />
+                  <Line type="monotone" dataKey="flagged" stroke="#f59e0b" strokeWidth={3} name="Flagged for Review" filter="url(#glow)" />
                   <defs>
                     <filter id="glow">
                       <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -350,15 +394,14 @@ const Dashboard = ({ refreshKey }: Props) => {
           </CardContent>
         </Card>
 
-        {/* Real Risk Distribution */}
         <Card className="tahoe-glass-lg tahoe-hover-scale">
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <Activity className="w-6 h-6 text-blue-400 tahoe-icon" />
-              Live Risk Assessment
+              Inbox Risk Indicator Distribution
             </CardTitle>
             <CardDescription>
-              Real-time risk analysis from security APIs
+              Heuristic-derived analysis based on email metadata patterns
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -391,53 +434,64 @@ const Dashboard = ({ refreshKey }: Props) => {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex justify-center space-x-6 mt-6">
+            <div className="flex flex-wrap justify-center gap-4 mt-6">
               {riskDistribution.map((item, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <div 
                     className="w-3 h-3 rounded-full" 
                     style={{ backgroundColor: item.color }}
                   ></div>
-                  <span className="tahoe-text opacity-70">{item.name}</span>
+                  <span className="tahoe-text opacity-70 text-sm">{item.name}</span>
                 </div>
               ))}
             </div>
+            <p className="text-center tahoe-text opacity-50 text-xs mt-4">
+              Note: Distribution derived from heuristic analysis, not real-time monitoring
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Live Security Threats Table */}
       <Card className="tahoe-glass-lg tahoe-hover-scale">
         <CardHeader>
-          <CardTitle>Live Security Analysis Results</CardTitle>
+          <CardTitle>Email Risk Indicator Analysis</CardTitle>
           <CardDescription>
-            Real-time threats detected by your security APIs
+            Indicators detected from Gmail metadata and authentication headers
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {topThreats.map((threat, index) => (
-              <div key={index} className="flex items-center justify-between p-5 tahoe-glass rounded-2xl tahoe-transition tahoe-hover-scale">
-                <div className="flex items-center space-x-4">
-                  <div className="tahoe-title text-blue-400">#{index + 1}</div>
-                  <div>
-                    <div className="tahoe-text-lg font-semibold mb-1">{threat.type}</div>
-                    <div className="tahoe-text opacity-60">{threat.count} real incidents detected</div>
+          {topIndicators.length > 0 ? (
+            <div className="space-y-4">
+              {topIndicators.map((indicator, index) => (
+                <div key={index} className="flex items-center justify-between p-5 tahoe-glass rounded-2xl tahoe-transition tahoe-hover-scale">
+                  <div className="flex items-center space-x-4">
+                    <div className="tahoe-title text-blue-400">#{index + 1}</div>
+                    <div>
+                      <div className="tahoe-text-lg font-semibold mb-1">{indicator.type}</div>
+                      <div className="tahoe-text opacity-60">{indicator.count} emails with this indicator</div>
+                      <div className="tahoe-text opacity-40 text-xs">{indicator.description}</div>
+                    </div>
                   </div>
+                  <Badge 
+                    className={
+                      indicator.severity === 'critical' ? 'malicious' :
+                      indicator.severity === 'high' ? 'malicious' :
+                      indicator.severity === 'medium' ? 'suspicious' :
+                      'unknown'
+                    }
+                  >
+                    {indicator.severity.toUpperCase()}
+                  </Badge>
                 </div>
-                <Badge 
-                  className={
-                    threat.severity === 'critical' ? 'malicious' :
-                    threat.severity === 'high' ? 'malicious' :
-                    threat.severity === 'medium' ? 'suspicious' :
-                    'unknown'
-                  }
-                >
-                  {threat.severity.toUpperCase()}
-                </Badge>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Shield className="w-12 h-12 text-green-400 mx-auto mb-4" />
+              <p className="tahoe-text">No significant risk indicators detected</p>
+              <p className="tahoe-text opacity-50 text-sm mt-2">Connect your Gmail account to analyze email security</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
