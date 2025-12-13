@@ -1,5 +1,9 @@
 run = "npm run dev"
 language = "nodejs"
+modules = ["nodejs-20", "web"]
 
 [env]
 NODE_VERSION = "20"
+
+[nix]
+channel = "stable-25_05"
