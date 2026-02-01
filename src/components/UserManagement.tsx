@@ -24,6 +24,8 @@ const UserManagement = ({ refreshKey }: Props) => {
     avgRiskScore: 0
   });
 
+
+
   useEffect(() => {
     const fetchRealUserData = async () => {
       try {

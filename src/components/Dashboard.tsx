@@ -300,7 +300,7 @@ const Dashboard = ({ refreshKey }: Props) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="tahoe-hover-scale">
+        <Card className="tahoe-hover-scale" {...riskIndicatorsCardHover}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
             <CardTitle className="tahoe-text-lg">Emails Triggering Risk Indicators</CardTitle>
             <AlertTriangle className="h-5 w-5 text-red-400 tahoe-icon" />
@@ -316,7 +316,7 @@ const Dashboard = ({ refreshKey }: Props) => {
           </CardContent>
         </Card>
 
-        <Card className="tahoe-hover-scale">
+        <Card className="tahoe-hover-scale" {...flaggedReviewCardHover}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
             <CardTitle className="tahoe-text-lg">Emails Flagged for Review</CardTitle>
             <Flag className="h-5 w-5 text-orange-400 tahoe-icon" />
@@ -332,7 +332,7 @@ const Dashboard = ({ refreshKey }: Props) => {
           </CardContent>
         </Card>
 
-        <Card className="tahoe-hover-scale">
+        <Card className="tahoe-hover-scale" {...automatedSenderCardHover}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
             <CardTitle className="tahoe-text-lg">Automated Sender Indicators</CardTitle>
             <Mail className="h-5 w-5 text-cyan-400 tahoe-icon" />
@@ -350,7 +350,7 @@ const Dashboard = ({ refreshKey }: Props) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="tahoe-glass-lg tahoe-hover-scale">
+        <Card className="tahoe-glass-lg tahoe-hover-scale" {...timelineCardHover}>
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <TrendingUp className="w-6 h-6 text-blue-400 tahoe-icon" />
@@ -394,7 +394,7 @@ const Dashboard = ({ refreshKey }: Props) => {
           </CardContent>
         </Card>
 
-        <Card className="tahoe-glass-lg tahoe-hover-scale">
+        <Card className="tahoe-glass-lg tahoe-hover-scale" {...distributionCardHover}>
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <Activity className="w-6 h-6 text-blue-400 tahoe-icon" />
@@ -452,7 +452,7 @@ const Dashboard = ({ refreshKey }: Props) => {
         </Card>
       </div>
 
-      <Card className="tahoe-glass-lg tahoe-hover-scale">
+      <Card className="tahoe-glass-lg tahoe-hover-scale" {...analysisCardHover}>
         <CardHeader>
           <CardTitle>Email Risk Indicator Analysis</CardTitle>
           <CardDescription>

@@ -23,6 +23,8 @@ const SecurityEvents = ({ refreshKey }: Props) => {
     investigating: 0
   });
 
+
+
   useEffect(() => {
     const fetchRealSecurityEvents = async () => {
       try {
@@ -235,7 +237,11 @@ const SecurityEvents = ({ refreshKey }: Props) => {
           investigating
         });
         
-        setSecurityEvents(realEvents);
+                const normalizedEvents = realEvents.map(event => ({
+          ...event,
+          type: event.type || event.eventType
+        }));
+        setSecurityEvents(normalizedEvents);
       } catch (error) {
         console.error('Failed to fetch security events:', error);
         // Fallback to fake data on error

@@ -21,6 +21,8 @@ export default function DataValidationReportComponent({ initialReport, refreshKe
   const [plainTextSummary, setPlainTextSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState("overview");
+
+
   
   useEffect(() => {
     const loadReport = async () => {
@@ -201,7 +203,7 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
           <Progress value={report.realDataPercentage} className="mt-2" />
         </CardContent>
       </Card>
-      <Card>
+      <Card {...summaryCardHover}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Security Risk Score</CardTitle>
           <div className="h-4 w-4 text-orange-600">
@@ -306,46 +308,6 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
         </CardContent>
       </Card>
 
-      {/* Recommendations */}
-      <Card className="card-hover glass-card-lg">
-        <CardHeader>
-          <CardTitle className="tahoe-text">Recommendations</CardTitle>
-          <CardDescription className="tahoe-text">
-            Actions needed to improve data quality
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {report.recommendations.map((recommendation, index) => (
-              <div key={index} className="flex items-start space-x-3 p-4 glass rounded-xl border border-white/10">
-                <AlertCircle className="h-5 w-5 text-yellow-500 mt-0.5" />
-                <span className="tahoe-text">{recommendation}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Additional APIs */}
-      <Card className="card-hover glass-card-lg">
-        <CardHeader>
-          <CardTitle className="tahoe-text">Recommended Additional APIs</CardTitle>
-          <CardDescription className="tahoe-text">
-            APIs that could enhance threat analysis and user security behavior
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {report.additionalAPIs.map((api, index) => (
-              <div key={index} className="flex items-center space-x-3 p-3 bg-slate-700/30 rounded-lg">
-                <ExternalLink className="h-4 w-4 text-cyan-400" />
-                <span className="tahoe-text text-sm">{api}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Report Metadata */}
       <Card className="card-hover glass-card-lg">
         <CardHeader>
@@ -420,58 +382,6 @@ ${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Recommendations */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recommendations</CardTitle>
-          <CardDescription>Based on your data analysis</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {report.recommendations.map((recommendation, index) => (
-              <li key={index} className="flex items-start space-x-2">
-                <div className="mt-0.5 rounded-full bg-blue-100 p-1 text-blue-600">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="m9 18 6-6-6-6" />
-                  </svg>
-                </div>
-                <span>{recommendation}</span>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      {/* Additional APIs */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Additional APIs</CardTitle>
-          <CardDescription>Services that could enhance your data</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {report.additionalAPIs.map((api, index) => (
-              <li key={index} className="flex items-start space-x-2">
-                <div className="mt-0.5 rounded-full bg-purple-100 p-1 text-purple-600">
-                  <ExternalLink className="h-4 w-4" />
-                </div>
-                <span>{api}</span>
-              </li>
-            ))}
-          </ul>
         </CardContent>
       </Card>
 

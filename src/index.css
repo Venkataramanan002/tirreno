@@ -404,6 +404,26 @@
   }
 }
 
+.tahoe-text,
+.tahoe-title,
+.tahoe-title-lg,
+.tahoe-text-lg,
+.ios-text,
+.ios-title,
+.ios-text-lg,
+p,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label,
+div {
+  color: #000000 !important;
+}
+
 /* Dev Mode Theme */
 body.dev-mode {
   background-image: url('/background/dev-mode-background.png');

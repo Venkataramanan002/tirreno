@@ -6,6 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { Shield, Bot, AlertTriangle, Ban, CheckCheck, AlertCircle, Zap, Eye, Cpu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { dataAggregationService, UnifiedEnrichmentData } from "@/services/dataAggregationService";
+import { useDevInfoHover } from "@/hooks/useDevInfoHover";
 
 interface Props {
   refreshKey?: string;

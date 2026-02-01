@@ -7,6 +7,7 @@ import SecurityEvents from "@/components/SecurityEvents";
 import UserManagement from "@/components/UserManagement";
 import SecurityScenarioAnalysis from "@/components/SecurityScenarioAnalysis";
 import DataValidationReportComponent from "@/components/DataValidationReport";
+import DevGmailAnalysis from "@/components/DevGmailAnalysis";
 import { Shield, RefreshCw } from "lucide-react";
 import AccountSwitcher from "@/components/AccountSwitcher";
 import AccountDropdown from "@/components/AccountDropdown";
@@ -20,6 +21,9 @@ import { isDevModeEnabled, initDevMode } from "@/services/devModeService";
 import { DataValidationReportService } from "@/services/dataValidationReport";
 import { dataAggregationService } from "@/services/dataAggregationService";
 import { initializeFromOAuthProfile } from "@/services/localAccountService";
+
+
+
 
 const Index = () => {
   const navigate = useNavigate();
@@ -188,7 +192,7 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-8 py-10">
         <Tabs defaultValue="scenario" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="w-full flex flex-nowrap overflow-x-auto p-2">
             <TabsTrigger value="scenario">
               Live Scenario
             </TabsTrigger>
@@ -210,6 +214,11 @@ const Index = () => {
             <TabsTrigger value="report">
               Data Report
             </TabsTrigger>
+            {devMode && (
+              <TabsTrigger value="dev-analysis">
+                Dev Analysis
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="scenario">
@@ -239,6 +248,12 @@ const Index = () => {
           <TabsContent value="report">
             <DataValidationReportComponent initialReport={dataValidationReport} refreshKey={refreshKey} />
           </TabsContent>
+
+          {devMode && (
+            <TabsContent value="dev-analysis">
+              <DevGmailAnalysis />
+            </TabsContent>
+          )}
         </Tabs>
       </main>
     </div>

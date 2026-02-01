@@ -19,6 +19,8 @@ const SecurityScenarioAnalysis = ({ refreshKey }: Props) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState("");
 
+
+
   // Helper functions moved to userDataService
 
   useEffect(() => {
